@@ -1,5 +1,6 @@
 #include <iostream> 
 #include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -19,14 +20,12 @@ struct STATION
 	double effectiveness;
 };
 
-PIPE One;
-STATION S1;
-
 PIPE NewPIPE()
 {
 	PIPE A;
 	cout << "Pipe kilometer mark (name): ";
-	cin >> A.title;
+	cin.ignore();
+	getline(cin, A.title);
 	cout << "Pipe lenght (metre): ";
 	cin >> A.lenght;
 	while (cin.fail() || A.lenght <= 0)
@@ -61,7 +60,8 @@ STATION NewSTATION()
 {
 	STATION Y;
 	cout << "Name of the compressor station: ";
-	cin >> Y.name;
+	cin.ignore();
+	getline(cin, Y.name);
 	cout << "Number of workshops in the compressor station: ";
 	cin >> Y.workshop;
 	while (cin.fail() || Y.workshop <= 0)
@@ -131,7 +131,7 @@ void PrintPIPE(const PIPE& A)
 		cout << "Pipe kilometer mark: " << A.title << endl;
 		cout << "Pipe lenght: " << A.lenght << endl;
 		cout << "Pipe diameter: " << A.diameter << endl;
-		if (A.repair == 0)
+		if (A.repair == 0)//!!
 		{
 			cout << "Pipe sign 'under repair': " << "repairing" << endl;
 		}
@@ -193,7 +193,7 @@ void EditPIPE(PIPE &A)
 {
 	cout << "Pipe sign 'under repair' (0 - repairing, 1 - works): ";
 	cin >> A.repair;
-	while (cin.fail())
+	while (cin.fail() || cin.peek() != '\n')
 	{
 		cout << "Please enter the correct value (0 or 1): ";
 		cin.clear();
@@ -207,7 +207,7 @@ void StartWorkshopsSTATION(STATION& Y)
 	int i;
 	cout << "Launch of compressor station workshops: ";
 	cin >> i;
-	while (cin.fail()||i <= 0||i>(Y.workshop-Y.inOperation))
+	while (cin.fail() || cin.peek() != '\n' || i <= 0 || i>(Y.workshop-Y.inOperation))
 	{
 		cout << "Please enter the correct value: ";
 		cin.clear();
@@ -222,7 +222,7 @@ void StopWorkshopsSTATION(STATION& Y)
 	int j;
 	cout << "Stop of compressor station workshops: ";
 	cin >> j;
-	while (cin.fail()||j <= 0||j>Y.inOperation)
+	while (cin.fail() || cin.peek() != '\n' ||j <= 0||j>Y.inOperation)
 	{
 		cout << "Please enter the correct value: ";
 		cin.clear();
@@ -245,14 +245,28 @@ void MENU()
 		<< "0. Exit" << endl;
 }
 
+int Choice()
+{
+	int i = 1;
+	cin >> i;
+	while (cin.fail() || cin.peek() != '\n')
+	{
+		cout << "Please enter the correct value: ";
+		cin.clear();
+		cin.ignore(1i64, '\n');
+		cin >> i;
+	}
+	return i;
+}
+
 int main()
 {
+	PIPE One;
+	STATION S1;
 	while (1)
 	{
 		MENU();
-		int i = 0;
-		cin >> i;
-		switch (i)
+		switch (Choice())
 		{
 		case 1:
 		{
@@ -274,8 +288,8 @@ int main()
 		}
 		case 4:
 		{
-		    EditPIPE(One);
-			PrintPIPE(One); 
+			EditPIPE(One);
+			PrintPIPE(One);
 			break;
 		}
 		case 5:
@@ -312,6 +326,7 @@ int main()
 		{
 			cout << "Wrong action" << endl;
 		}
+		
 		}
 	}
 	
