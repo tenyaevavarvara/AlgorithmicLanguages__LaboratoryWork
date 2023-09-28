@@ -1,4 +1,4 @@
-#include <iostream>
+#include <iostream> 
 #include <fstream>
 
 using namespace std;
@@ -234,22 +234,107 @@ void StopWorkshopsSTATION(STATION& Y)
 	Y.inOperation -= j;
 }
 
+void MENU()
+{
+	cout << "1. Add a pipe" << endl
+		<< "2. Add a compressor station" << endl
+		<< "3. Viewing all objects" << endl
+		<< "4. Edit a pipe" << endl
+		<< "5. Starting the station workshop" << endl
+		<< "6. Stopping the station workshop" << endl
+		<< "7. Save to file" << endl
+		<< "8. Upload from file" << endl
+		<< "0. Exit" << endl;
+}
+
 int main()
 {
-	One = NewPIPE();
-	S1 = NewSTATION();
+	while (1)
+	{
+		MENU();
+		int i = 0;
+		cin >> i;
+		switch (i)
+		{
+		case 1:
+		{
+			One = NewPIPE();
+			PrintPIPE(One);
+			break;
+		}
+		case 2:
+		{
+			S1 = NewSTATION();
+			PrintSTATION(S1);
+			break;
+		}
+		case 3:
+		{
+			PrintPIPE(One);
+			PrintSTATION(S1);
+			break;
+		}
+		case 4:
+		{
+		    EditPIPE(One);
+			PrintPIPE(One); 
+			break;
+		}
+		case 5:
+		{
+			StartWorkshopsSTATION(S1);
+			PrintSTATION(S1);
+			break;
+		}
+		case 6:
+		{
+			StopWorkshopsSTATION(S1);
+			PrintSTATION(S1);
+			break;
+		}
+		case 7:
+		{
+			SavePIPE(One);
+			SaveSTATION(S1);
+			break;
+		}
+		case 8:
+		{
+			//DownloadPIPE();
+			//DownloadSTATION();
+			PrintPIPE(DownloadPIPE());
+			PrintSTATION(DownloadSTATION());
+			break;
+		}
+		case 0:
+		{
+			return 0;
+		}
+		default:
+		{
+			cout << "Wrong action" << endl;
+		}
+		}
+	}
+	//One = NewPIPE();
+	//S1 = NewSTATION();
+	 
 	//DownloadPIPE();
 	//DownloadSTATION();
-	PrintPIPE(One);
+	 
+	//PrintPIPE(One);
 	//SavePIPE(One);
 	//PrintPIPE(DownloadPIPE());
-	PrintSTATION(S1);
+	 
+	//PrintSTATION(S1);
 	//SaveSTATION(S1);
 	//PrintSTATION(DownloadSTATION());
+	 
 	//EditPIPE(One);
 	//PrintPIPE(One);
+	 
 	//StartWorkshopsSTATION(S1);
 	//StopWorkshopsSTATION(S1);
-	//PrintSTATION(S1);
+	
 	return 0;
 }
