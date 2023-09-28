@@ -5,7 +5,7 @@ using namespace std;
 
 struct PIPE
 {
-	string title;
+	string title = "Untitled";
 	double lenght;
 	int diameter;
 	bool repair;
@@ -13,7 +13,7 @@ struct PIPE
 
 struct STATION
 {
-	string name;
+	string name = "Untitled";
 	int workshop;
 	int inOperation;
 	double effectiveness;
@@ -126,48 +126,50 @@ STATION DownloadSTATION()
 
 void PrintPIPE(const PIPE& A)
 {
-	cout << "Pipe kilometer mark: " << A.title<<endl;
-	cout << "Pipe lenght: "<< A.lenght<<endl;
-	cout << "Pipe diameter: "<< A.diameter<<endl;
-	if (A.repair == 0)
+	if (A.title != "Untitled")
 	{
-		cout << "Pipe sign 'under repair': " << "repairing" << endl;
+		cout << "Pipe kilometer mark: " << A.title << endl;
+		cout << "Pipe lenght: " << A.lenght << endl;
+		cout << "Pipe diameter: " << A.diameter << endl;
+		if (A.repair == 0)
+		{
+			cout << "Pipe sign 'under repair': " << "repairing" << endl;
+		}
+		else
+		{
+			cout << "Pipe sign 'under repair': " << "works" << endl;
+		}
 	}
 	else
 	{
-		cout << "Pipe sign 'under repair': " << "works" << endl;
+		cout << "Pipe not added" << endl;
 	}
 }
 
 void PrintSTATION(const STATION& Y)
 {
-	cout << "Name of the compressor station: " << Y.name<<endl;
-	cout << "Number of workshops in the compressor station: "<< Y.workshop<<endl;
-	cout << "Number of workshops in operation at the compressos station: "<<Y.inOperation<<endl;
-	cout << "Compressor station effiency: "<< Y.effectiveness<<endl;
+	if (Y.name != "Untitled")
+	{
+		cout << "Name of the compressor station: " << Y.name << endl;
+		cout << "Number of workshops in the compressor station: " << Y.workshop << endl;
+		cout << "Number of workshops in operation at the compressos station: " << Y.inOperation << endl;
+		cout << "Compressor station effiency: " << Y.effectiveness << endl;
+	}
+	else
+	{
+		cout << "Station not added" << endl;
+	}
 }
 
 void SavePIPE(const PIPE& A)
 {
 	ofstream fout;
 	fout.open("PIPE.txt", ios::out);
-	if (fout.is_open())
+	if (fout.is_open() && A.title != "Untitled")
 	{
-		//cout << "Pipe kilometer mark: " << endl;
 		fout << A.title << endl;
-		//cout << "Pipe lenght: " << endl;
 		fout << A.lenght << endl;
-		//cout << "Pipe diameter: " << endl;
 		fout << A.diameter << endl;
-		//if (A.repair == 0)
-		//{
-		//	fout << "Pipe sign 'under repair': " << "repairing" << endl;
-		//}
-		//else
-		//{
-		//	fout << "Pipe sign 'under repair': " << "works" << endl;
-		//}
-		//cout << "Pipe sign 'under repair': " << endl;
 		fout << A.repair;
 		fout.close();
 	}
@@ -177,15 +179,11 @@ void SaveSTATION(const STATION& Y)
 {
 	ofstream fout;
 	fout.open("STATION.txt", ios::out);
-	if (fout.is_open())
+	if (fout.is_open() && Y.name != "Untitled")
 	{
-		//cout << "Name of the compressor station: " << endl;
 		fout << Y.name << endl;
-		//cout << "Number of workshops in the compressor station: " << endl;
 		fout << Y.workshop << endl;
-		//cout << "Number of workshops in operation at the compressos station: " << endl;
 		fout << Y.inOperation << endl;
-		//cout << "Compressor station effiency: " << endl;
 		fout << Y.effectiveness;
 		fout.close();
 	}
@@ -316,25 +314,6 @@ int main()
 		}
 		}
 	}
-	//One = NewPIPE();
-	//S1 = NewSTATION();
-	 
-	//DownloadPIPE();
-	//DownloadSTATION();
-	 
-	//PrintPIPE(One);
-	//SavePIPE(One);
-	//PrintPIPE(DownloadPIPE());
-	 
-	//PrintSTATION(S1);
-	//SaveSTATION(S1);
-	//PrintSTATION(DownloadSTATION());
-	 
-	//EditPIPE(One);
-	//PrintPIPE(One);
-	 
-	//StartWorkshopsSTATION(S1);
-	//StopWorkshopsSTATION(S1);
 	
 	return 0;
 }
