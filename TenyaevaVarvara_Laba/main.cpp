@@ -1,15 +1,44 @@
 #include <iostream> 
 #include <fstream>
 #include <string>
+#include <climits>
+#include <vector>
 
 using namespace std;
 
+/* Functions declarations */
+int InputInt(const char text[], int minValue, int maxValue);
+string InputString(const char text[], int maxLength);
+double InputDouble(const char text[], double minValue, double maxValue);
+
+/* Structs */
 struct PIPE
 {
 	string title = "Untitled";
-	double lenght;
+	double length;
 	int diameter;
 	bool repair;
+
+	void EditPIPE()
+	{
+		repair = InputInt("Pipe sign 'under repair' (0 - repairing, 1 - works): ", 0, 1);
+	}
+
+	void Print()
+	{
+		cout << "| Pipe kilometer mark: " << title << endl;
+		cout << "| Pipe length: " << length << endl;
+		cout << "| Pipe diameter: " << diameter << endl;
+		cout << "| Pipe sign 'under repair': " << ((repair == 0) ? "repairing" : "works") << endl;
+	}
+
+	void PrintSimplified()
+	{
+		cout << "Kilometer mark: " << title << "; "
+			<< "length: " << length << "; "
+			<< "diameter: " << diameter << "; "
+			<< ((repair == 0) ? "repairing" : "works") << endl;
+	}
 };
 
 struct STATION
@@ -18,223 +47,191 @@ struct STATION
 	int workshop;
 	int inOperation;
 	double effectiveness;
+
+	void StartWorkshopsSTATION()
+	{
+		int i;
+		cout << "Launch of compressor station workshops: ";
+		cin >> i;
+		while (cin.fail() || cin.peek() != '\n' || i <= 0 || i > (workshop - inOperation))
+		{
+			cout << "Please enter the correct value: ";
+			cin.clear();
+			cin.ignore(1i64, '\n');
+			cin >> i;
+		}
+		inOperation += i;
+	}
+
+	void StopWorkshopsSTATION()
+	{
+		int j;
+		cout << "Stop of compressor station workshops: ";
+		cin >> j;
+		while (cin.fail() || cin.peek() != '\n' || j <= 0 || j > inOperation)
+		{
+			cout << "Please enter the correct value: ";
+			cin.clear();
+			cin.ignore(1i64, '\n');
+			cin >> j;
+		}
+		inOperation -= j;
+	}
+
+	void Print()
+	{
+		cout << "| Name of the compressor station: " << name << endl;
+		cout << "| Number of workshops in the compressor station: " << workshop << endl;
+		cout << "| Number of workshops in operation at the compressos station: " << inOperation << endl;
+		cout << "| Compressor station effiency: " << effectiveness << endl;
+	}
+
+	void PrintSimplified()
+	{
+		cout << "Name: " << name << "; "
+			<< "workshops count: " << workshop << "; "
+			<< "workshops in operation: " << inOperation << "; "
+			<< "effectiveness: " << effectiveness << endl;
+	}
 };
+
+/* Functions */
+// TODO: Првоерять длину строки
+string InputString(const char text[], int maxLength)
+{
+	string value;
+	cout << text;
+	cin.ignore();
+	getline(cin, value);
+	while (value.length() > maxLength || cin.fail() || value.length() == 0)
+	{
+		cout << text;
+		getline(cin, value);
+	}
+	return value;
+}
+
+double InputDouble(const char text[], double minValue = DBL_MIN, double maxValue = DBL_MAX)
+{
+	double value;
+	cout << text;
+	cin >> value;
+	while (cin.fail() || value < minValue || value > maxValue)
+	{
+		cout << text;
+		cin.clear();
+		cin.ignore(1i64, '\n');
+		cin >> value;
+	}
+	return value;
+}
+
+int InputInt(const char text[], int minValue = INT_MIN, int maxValue = INT_MAX)
+{
+	int value;
+	cout << text;
+	cin >> value;
+	while (cin.fail() || value < minValue || value > maxValue)
+	{
+		cout << text;
+		cin.clear();
+		cin.ignore(1i64, '\n');
+		cin >> value;
+	}
+	return value;
+}
 
 PIPE NewPIPE()
 {
 	PIPE A;
-	cout << "Pipe kilometer mark (name): ";
-	cin.ignore();
-	getline(cin, A.title);
-	cout << "Pipe lenght (metre): ";
-	cin >> A.lenght;
-	while (cin.fail() || A.lenght <= 0)
-	{
-		cout << "Please enter the correct value (greater than 0): ";
-		cin.clear();
-		cin.ignore(1i64, '\n');
-		cin >> A.lenght;
-	}
-	cout << "Pipe diameter (centimetre): ";
-	cin >> A.diameter;
-	while (cin.fail() || A.diameter <= 0)
-	{
-		cout << "Please enter the correct value (greater than 0): ";
-		cin.clear();
-		cin.ignore(1i64, '\n');
-		cin >> A.diameter;
-	}
-	cout << "Pipe sign 'under repair' (0 - repairing, 1 - works): ";
-	cin >> A.repair;
-	while (cin.fail())
-	{
-		cout << "Please enter the correct value (0 or 1): ";
-		cin.clear();
-		cin.ignore(1i64, '\n');
-		cin >> A.repair;
-	}
+	A.title = InputString("Pipe kilometer mark (name): ", 32);
+	A.length = InputInt("Pipe length (metre): ", 0);
+	A.diameter = InputInt("Pipe diameter (centimetre): ", 0);
+	A.repair = InputInt("Pipe sign 'under repair' (0 - repairing, 1 - works): ", 0, 1);
 	return A;
 }
 
 STATION NewSTATION()
 {
 	STATION Y;
-	cout << "Name of the compressor station: ";
-	cin.ignore();
-	getline(cin, Y.name);
-	cout << "Number of workshops in the compressor station: ";
-	cin >> Y.workshop;
-	while (cin.fail() || Y.workshop <= 0)
-	{
-		cout << "Please enter the correct value (greater than 0): ";
-		cin.clear();
-		cin.ignore(1i64, '\n');
-		cin >> Y.workshop;
-	}
-	cout << "Number of workshops in operation at the compressos station: ";
-	cin >> Y.inOperation;
-	while (cin.fail() || Y.inOperation > Y.workshop || Y.inOperation < 0)
-	{
-		cout << "Please enter the correct value (greater than 0,but less than Number of workshops): ";
-		cin.clear();
-		cin.ignore(1i64, '\n');
-		cin >> Y.inOperation;
-	}
-	cout << "Compressor station effiency: ";
-	cin >> Y.effectiveness;
-	while (cin.fail() || Y.effectiveness > 1 || Y.effectiveness < 0)
-	{
-		cout << "Please enter the correct value (in the range from 0 to 1): ";
-		cin.clear();
-		cin.ignore(1i64, '\n');
-		cin >> Y.effectiveness;
-	}
+	Y.name = InputString("Name of the compressor station: ", 32);
+	Y.workshop = InputInt("Number of workshops in the compressor station: ", 0);
+	Y.inOperation = InputInt("Number of workshops in operation at the compressors station: ", 0, Y.workshop);
+	Y.effectiveness = InputDouble("Compressor station effiency: ", 0, 1);
 	return Y;
 }
 
-PIPE DownloadPIPE()
+void SaveObjects(vector<PIPE>& pipes, vector<STATION>& stations)
 {
-	PIPE A;
-	ifstream fin;
-	fin.open("PIPE.txt", ios::in);
-	if (fin.is_open())
+	ofstream fout;
+	fout.open("tenyaeva.txt", ios::out);
+	if (fout.is_open())
 	{
-		fin >> A.title;
-		fin >> A.lenght;
-		fin >> A.diameter;
-		fin >> A.repair;
-		fin.close();	
+		fout << pipes.size() << endl;
+		for (int i = 0; i < pipes.size(); i++)
+		{
+			fout << pipes[i].title << endl;
+			fout << pipes[i].length << endl;
+			fout << pipes[i].diameter << endl;
+			fout << pipes[i].repair << endl;
+		}
+		fout << stations.size() << endl;
+		for (int i = 0; i < stations.size(); i++)
+		{
+			fout << stations[i].name << endl;
+			fout << stations[i].workshop << endl;
+			fout << stations[i].inOperation << endl;
+			fout << stations[i].effectiveness << endl;
+		}
+		fout.close();
 	}
-	return A;
 }
 
-STATION DownloadSTATION()
+void DownloadObjects(vector<PIPE>& pipes, vector<STATION>& stations)
 {
-	STATION Y;
 	ifstream fin;
-	fin.open("STATION.txt", ios::in);
+	fin.open("tenyaeva.txt", ios::in);
 	if (fin.is_open())
 	{
-		fin >> Y.name;
-		fin >> Y.workshop;
-		fin >> Y.inOperation;
-		fin >> Y.effectiveness;
+		int size;
+		fin >> size;
+		if (fin.fail())
+		{
+			fin.close();
+			return;
+		}
+		for (int i = 0; i < size; i++)
+		{
+			PIPE pipe;
+			fin >> pipe.title;
+			fin >> pipe.length;
+			fin >> pipe.diameter;
+			fin >> pipe.repair;
+			pipes.push_back(pipe);
+		}
+		fin >> size;
+		if (fin.fail())
+		{
+			fin.close();
+			return;
+		}
+		for (int i = 0; i < size; i++)
+		{
+			STATION station;
+			fin >> station.name;
+			fin >> station.workshop;
+			fin >> station.inOperation;
+			fin >> station.effectiveness;
+			stations.push_back(station);
+		}
 		fin.close();
 	}
-	return Y;
 }
 
-void PrintPIPE(const PIPE& A)
+void PrintMENU()
 {
-	if (A.title != "Untitled")
-	{
-		cout << "Pipe kilometer mark: " << A.title << endl;
-		cout << "Pipe lenght: " << A.lenght << endl;
-		cout << "Pipe diameter: " << A.diameter << endl;
-		if (A.repair == 0)//!!
-		{
-			cout << "Pipe sign 'under repair': " << "repairing" << endl;
-		}
-		else
-		{
-			cout << "Pipe sign 'under repair': " << "works" << endl;
-		}
-	}
-	else
-	{
-		cout << "Pipe not added" << endl;
-	}
-}
-
-void PrintSTATION(const STATION& Y)
-{
-	if (Y.name != "Untitled")
-	{
-		cout << "Name of the compressor station: " << Y.name << endl;
-		cout << "Number of workshops in the compressor station: " << Y.workshop << endl;
-		cout << "Number of workshops in operation at the compressos station: " << Y.inOperation << endl;
-		cout << "Compressor station effiency: " << Y.effectiveness << endl;
-	}
-	else
-	{
-		cout << "Station not added" << endl;
-	}
-}
-
-void SavePIPE(const PIPE& A)
-{
-	ofstream fout;
-	fout.open("PIPE.txt", ios::out);
-	if (fout.is_open() && A.title != "Untitled")
-	{
-		fout << A.title << endl;
-		fout << A.lenght << endl;
-		fout << A.diameter << endl;
-		fout << A.repair;
-		fout.close();
-	}
-}
-
-void SaveSTATION(const STATION& Y)
-{
-	ofstream fout;
-	fout.open("STATION.txt", ios::out);
-	if (fout.is_open() && Y.name != "Untitled")
-	{
-		fout << Y.name << endl;
-		fout << Y.workshop << endl;
-		fout << Y.inOperation << endl;
-		fout << Y.effectiveness;
-		fout.close();
-	}
-}
-
-void EditPIPE(PIPE &A)
-{
-	cout << "Pipe sign 'under repair' (0 - repairing, 1 - works): ";
-	cin >> A.repair;
-	while (cin.fail() || cin.peek() != '\n')
-	{
-		cout << "Please enter the correct value (0 or 1): ";
-		cin.clear();
-		cin.ignore(1i64, '\n');
-		cin >> A.repair;
-	}
-}
-
-void StartWorkshopsSTATION(STATION& Y)
-{
-	int i;
-	cout << "Launch of compressor station workshops: ";
-	cin >> i;
-	while (cin.fail() || cin.peek() != '\n' || i <= 0 || i>(Y.workshop-Y.inOperation))
-	{
-		cout << "Please enter the correct value: ";
-		cin.clear();
-		cin.ignore(1i64, '\n');
-		cin >> i;
-	}
-	Y.inOperation += i;
-}
-
-void StopWorkshopsSTATION(STATION& Y)
-{
-	int j;
-	cout << "Stop of compressor station workshops: ";
-	cin >> j;
-	while (cin.fail() || cin.peek() != '\n' ||j <= 0||j>Y.inOperation)
-	{
-		cout << "Please enter the correct value: ";
-		cin.clear();
-		cin.ignore(1i64, '\n');
-		cin >> j;
-	}
-	Y.inOperation -= j;
-}
-
-void MENU()
-{
-	cout << "1. Add a pipe" << endl
+	cout << "[MENU]" << endl
+		<< "1. Add a pipe" << endl
 		<< "2. Add a compressor station" << endl
 		<< "3. Viewing all objects" << endl
 		<< "4. Edit a pipe" << endl
@@ -242,82 +239,158 @@ void MENU()
 		<< "6. Stopping the station workshop" << endl
 		<< "7. Save to file" << endl
 		<< "8. Upload from file" << endl
-		<< "0. Exit" << endl;
-}
-
-int Choice()
-{
-	int i = 1;
-	cin >> i;
-	while (cin.fail() || cin.peek() != '\n')
-	{
-		cout << "Please enter the correct value: ";
-		cin.clear();
-		cin.ignore(1i64, '\n');
-		cin >> i;
-	}
-	return i;
+		<< "0. Exit" << endl << endl;
 }
 
 int main()
 {
-	PIPE One;
-	STATION S1;
+	vector<PIPE> pipes;
+	vector<STATION> stations;
+
 	while (1)
 	{
-		MENU();
-		switch (Choice())
+		cout << endl;
+		PrintMENU();
+		int i = InputInt("Select a menu item: ", 0, 8);
+		cout << endl;
+		switch (i)
 		{
+			/* Add pipe */
 		case 1:
 		{
-			One = NewPIPE();
-			PrintPIPE(One);
+			cout << "[Add pipe]" << endl;
+			PIPE pipe = NewPIPE();
+			pipes.push_back(pipe);
+			cout << endl << "Added new pipe:" << endl;
+			pipe.Print();
 			break;
 		}
+		/* Add a compressor station */
 		case 2:
 		{
-			S1 = NewSTATION();
-			PrintSTATION(S1);
+			cout << "[Add a compressor station]" << endl;
+			STATION station = NewSTATION();
+			stations.push_back(station);
+			cout << endl << "Added new compressor station:" << endl;
+			station.Print();
 			break;
 		}
+		/* Viewing all objects */
 		case 3:
 		{
-			PrintPIPE(One);
-			PrintSTATION(S1);
+			cout << "[Viewing all objects]" << endl;
+			if (pipes.size() == 0 and stations.size() == 0) {
+				cout << "No objects" << endl;
+			}
+			if (pipes.size() > 0)
+			{
+				cout << "Pipes:" << endl;
+				for (int i = 0; i < pipes.size(); i++)
+				{
+					cout << '[' << i + 1 << "] ";
+					pipes[i].PrintSimplified();
+				}
+			}
+			if (stations.size() > 0)
+			{
+				cout << "Stations:" << endl;
+				for (int i = 0; i < stations.size(); i++)
+				{
+					cout << '[' << i + 1 << "] ";
+					stations[i].PrintSimplified();
+				}
+			}
 			break;
 		}
+		/* Edit a pipe */
 		case 4:
 		{
-			EditPIPE(One);
-			PrintPIPE(One);
+			cout << "[Edit a pipe]" << endl;
+			if (pipes.size() == 0)
+			{
+				cout << "There are no pipes" << endl;
+				break;
+			}
+			cout << "Pipes:" << endl;
+			for (int i = 0; i < pipes.size(); i++)
+			{
+				cout << '[' << i + 1 << "] ";
+				pipes[i].PrintSimplified();
+			}
+			int i = InputInt("Choose pipe number: ", 1, pipes.size());
+			pipes[i - 1].EditPIPE();
+			pipes[i - 1].Print();
 			break;
 		}
+		/* Starting the station workshop */
 		case 5:
 		{
-			StartWorkshopsSTATION(S1);
-			PrintSTATION(S1);
+			cout << "[Starting the station workshop]" << endl;
+			if (stations.size() == 0)
+			{
+				cout << "There are no stations" << endl;
+				break;
+			}
+			cout << "Stations:" << endl;
+			for (int i = 0; i < stations.size(); i++)
+			{
+				cout << '[' << i + 1 << "] ";
+				stations[i].PrintSimplified();
+			}
+			int i = InputInt("Station number to start: ", 1, pipes.size());
+			stations[i - 1].StartWorkshopsSTATION();
+			stations[i - 1].Print();
 			break;
 		}
+		/* Stopping the station workshop */
 		case 6:
 		{
-			StopWorkshopsSTATION(S1);
-			PrintSTATION(S1);
+			cout << "[Stopping the station workshop]" << endl;
+			if (stations.size() == 0)
+			{
+				cout << "There are no stations" << endl;
+				break;
+			}
+			cout << "Stations:" << endl;
+			for (int i = 0; i < stations.size(); i++)
+			{
+				cout << '[' << i + 1 << "] ";
+				stations[i].PrintSimplified();
+			}
+			int i = InputInt("Station number to stop: ", 1, pipes.size());
+			stations[i - 1].StopWorkshopsSTATION();
+			stations[i - 1].Print();
 			break;
 		}
+		/* Save to file */
 		case 7:
 		{
-			SavePIPE(One);
-			SaveSTATION(S1);
+			cout << "[Save to file]" << endl;
+			SaveObjects(pipes, stations);
 			break;
 		}
+		/* Upload from file */
 		case 8:
 		{
-			//DownloadPIPE();
-			//DownloadSTATION();
-			PrintPIPE(DownloadPIPE());
-			PrintSTATION(DownloadSTATION());
+			cout << "[Upload from file]" << endl;
+			pipes.clear();
+			stations.clear();
+			DownloadObjects(pipes, stations);
+			cout << "Loaded pipes:" << endl;
+			for (int i = 0; i < pipes.size(); i++)
+			{
+				cout << "| " << i + 1 << " ";
+				pipes[i].PrintSimplified();
+			}
+			cout << "Loaded stations:" << endl;
+			for (int i = 0; i < stations.size(); i++)
+			{
+				cout << "| " << i + 1 << " ";
+				stations[i].PrintSimplified();
+			}
 			break;
 		}
+		/* Exit */
 		case 0:
 		{
 			return 0;
@@ -326,9 +399,8 @@ int main()
 		{
 			cout << "Wrong action" << endl;
 		}
-		
 		}
 	}
-	
+
 	return 0;
 }
