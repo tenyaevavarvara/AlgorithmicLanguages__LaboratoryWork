@@ -13,7 +13,7 @@ const int MAX_STATION_NAME_LENGTH = 32;
 const int MAX_STATION_WORKSHOP = 1000;
 
 /* Functions declarations */
-string InputString(const char text[], int maxLength);
+string InputString(const char text[], int maxLength);                       // char
 double InputDouble(const char text[], double minValue, double maxValue);
 int InputInt(const char text[], int minValue, int maxValue);
 
@@ -96,7 +96,7 @@ struct STATION
 };
 
 /* Functions */
-string InputString(const char text[], int maxLength)
+string InputString(const char text[], int maxLength)                   //
 {
 	string value;
 	cout << text;
@@ -117,7 +117,7 @@ string InputString(const char text[], int maxLength)
 	return value;
 }
 
-double InputDouble(const char text[], double minValue = DBL_MIN, double maxValue = DBL_MAX)
+double InputDouble(const char text[], double minValue = DBL_MIN, double maxValue = DBL_MAX)               //
 {
 	double value;
 	string inputLine;
@@ -153,7 +153,7 @@ double InputDouble(const char text[], double minValue = DBL_MIN, double maxValue
 	return value;
 }
 
-int InputInt(const char text[], int minValue = INT_MIN, int maxValue = INT_MAX)
+int InputInt(const char text[], int minValue = INT_MIN, int maxValue = INT_MAX)                                            //
 {
 	int value;
 	string inputLine;
@@ -217,7 +217,7 @@ void WaitForENTER()
 	getline(cin, inputLine);
 }
 
-void SaveObjects(vector<PIPE>& pipes, vector<STATION>& stations)
+void SaveObjects(vector<PIPE>& pipes, vector<STATION>& stations)                                                 //
 {
 	ofstream fout;
 	fout.open("tenyaeva.txt", ios::out);
@@ -243,7 +243,7 @@ void SaveObjects(vector<PIPE>& pipes, vector<STATION>& stations)
 	}
 }
 
-void DownloadObjects(vector<PIPE>& pipes, vector<STATION>& stations)
+void DownloadObjects(vector<PIPE>& pipes, vector<STATION>& stations)                            //
 {
 	ifstream fin;
 	fin.open("tenyaeva.txt", ios::in);
@@ -259,7 +259,8 @@ void DownloadObjects(vector<PIPE>& pipes, vector<STATION>& stations)
 		for (int i = 0; i < size; i++)
 		{
 			PIPE pipe;
-			fin >> pipe.title;
+			fin >> ws;                            
+			getline(fin, pipe.title);
 			fin >> pipe.length;
 			fin >> pipe.diameter;
 			fin >> pipe.repair;
@@ -274,7 +275,8 @@ void DownloadObjects(vector<PIPE>& pipes, vector<STATION>& stations)
 		for (int i = 0; i < size; i++)
 		{
 			STATION station;
-			fin >> station.name;
+			fin >> ws;
+			getline(fin, station.name);
 			fin >> station.workshop;
 			fin >> station.inOperation;
 			fin >> station.effectiveness;
