@@ -3,19 +3,13 @@
 #include <string>
 #include <climits>
 #include <vector>
+#include "utils.h"
 
 using namespace std;
 
-const int MAX_PIPE_NAME_LENGTH = 32;
 const int MAX_PIPE_LENGTH = 1000;
 const int MAX_PIPE_DIAMETER = 1000;
-const int MAX_STATION_NAME_LENGTH = 32;
 const int MAX_STATION_WORKSHOP = 1000;
-
-/* Functions declarations */
-string InputString(const char text[], int maxLength);                       // char
-double InputDouble(const char text[], double minValue, double maxValue);
-int InputInt(const char text[], int minValue, int maxValue);
 
 /* Structs */
 struct PIPE
@@ -27,7 +21,8 @@ struct PIPE
 
 	void EditPIPE()
 	{
-		repair = InputInt("Pipe sign 'under repair' (0 - repairing, 1 - works): ", 0, 1);
+		cout << "Pipe sign 'under repair' (0 - repairing, 1 - works): ";
+		repair = GetCorrectNumber<int>(0, 1);
 	}
 
 	void Print()
@@ -61,7 +56,9 @@ struct STATION
 			cout << "All workshops are in operation" << endl;
 			return;
 		}
-		int i = InputInt("Launch of compressor station workshops: ", 0, (workshop - inOperation));
+
+		cout << "Launch of compressor station workshops: ";
+		int i = GetCorrectNumber<int>(0, (workshop - inOperation));
 		inOperation += i;
 		cout << "Workshops launched: " << i << "; total launched:" << inOperation << endl;
 	}
@@ -73,7 +70,8 @@ struct STATION
 			cout << "All workshops are stopped" << endl;
 			return;
 		}
-		int i = InputInt("Stop of compressor station workshops: ", 0, inOperation);
+		cout << "Stop of compressor station workshops: ";
+		int i = GetCorrectNumber<int>(0, inOperation);
 		inOperation -= i;
 		cout << "Workshops stopped: " << i << "; total launched:" << inOperation << endl;
 	}
@@ -95,118 +93,31 @@ struct STATION
 	}
 };
 
-/* Functions */
-string InputString(const char text[], int maxLength)                   //
-{
-	string value;
-	cout << text;
-	getline(cin, value);
-	while (value.length() > maxLength || cin.fail() || value.length() == 0)
-	{
-		cout << text;
-		getline(cin, value);
-		if (value.length() > maxLength)
-		{
-			cout << "! Please enter a string with length less than " << maxLength << " !" << endl;
-		}
-		if (value.length() == 0)
-		{
-			cout << "! Please enter non empty string !" << endl;
-		}
-	}
-	return value;
-}
-
-double InputDouble(const char text[], double minValue = DBL_MIN, double maxValue = DBL_MAX)               //
-{
-	double value;
-	string inputLine;
-	bool validInput = false;
-
-	do {
-		cout << text;
-		getline(cin, inputLine);
-
-		try
-		{
-			value = stod(inputLine);
-			validInput = true;
-		}
-		catch (invalid_argument&)
-		{
-			validInput = false;
-		}
-		catch (out_of_range&)
-		{
-			validInput = false;
-		}
-
-		if (!validInput)
-		{
-			cout << "! Please enter a valid double value !" << endl;
-		} else if (value < minValue || value > maxValue)
-		{
-			cout << "! Please enter a value between " << minValue << " and " << maxValue << " !" << endl;
-		}
-	} while (!validInput || value < minValue || value > maxValue);
-
-	return value;
-}
-
-int InputInt(const char text[], int minValue = INT_MIN, int maxValue = INT_MAX)                                            //
-{
-	int value;
-	string inputLine;
-	bool validInput = false;
-
-	do {
-		cout << text;
-		getline(cin, inputLine);
-
-		try
-		{
-			value = stoi(inputLine);
-			validInput = true;
-		}
-		catch (invalid_argument&)
-		{
-			validInput = false;
-		}
-		catch (out_of_range&)
-		{
-			validInput = false;
-		}
-
-		if (!validInput)
-		{
-			cout << "! Please enter a valid integer value !" << endl;
-		}
-		else if (value < minValue || value > maxValue)
-		{
-			cout << "! Please enter a value between " << minValue << " and " << maxValue << " !" << endl;
-		}
-	} while (!validInput || value < minValue || value > maxValue);
-
-	return value;
-}
-
 PIPE NewPIPE()
 {
 	PIPE A;
-	A.title = InputString("Pipe kilometer mark (name): ", MAX_PIPE_NAME_LENGTH);
-	A.length = InputInt("Pipe length (metre): ", 1, MAX_PIPE_LENGTH);
-	A.diameter = InputInt("Pipe diameter (centimetre): ", 1, MAX_PIPE_DIAMETER);
-	A.repair = InputInt("Pipe sign 'under repair' (0 - repairing, 1 - works): ", 0, 1);
+	cout << "Pipe kilometer mark (name): ";
+	INPUT_LINE(cin, A.title);
+	cout << "Pipe length (metre): ";
+	A.length = GetCorrectNumber<int>(1, MAX_PIPE_LENGTH);
+	cout << "Pipe diameter (centimetre): ";
+	A.diameter = GetCorrectNumber<int>(1, MAX_PIPE_DIAMETER);
+	cout << "Pipe sign 'under repair' (0 - repairing, 1 - works): ";
+	A.repair = GetCorrectNumber<int>(0, 1);
 	return A;
 }
 
 STATION NewSTATION()
 {
 	STATION Y;
-	Y.name = InputString("Name of the compressor station: ", MAX_STATION_NAME_LENGTH);
-	Y.workshop = InputInt("Number of workshops in the compressor station: ", 1, MAX_STATION_WORKSHOP);
-	Y.inOperation = InputInt("Number of workshops in operation at the compressors station: ", 0, Y.workshop);
-	Y.effectiveness = InputDouble("Compressor station effiency: ", 0, 1);
+	cout << "Name of the compressor station: ";
+	INPUT_LINE(cin, Y.name);
+	cout << "Number of workshops in the compressor station: ";
+	Y.workshop = GetCorrectNumber<int>(1, MAX_STATION_WORKSHOP);
+	cout << "Number of workshops in operation at the compressors station: ";
+	Y.inOperation = GetCorrectNumber<int>(0, Y.workshop);
+	cout << "Compressor station effiency: ";
+	Y.effectiveness = GetCorrectNumber<double>(0, 1);
 	return Y;
 }
 
@@ -214,11 +125,73 @@ void WaitForENTER()
 {
 	string inputLine;
 	cout << "Press enter to continue..." << endl;
+	std::cin.ignore(10000, '\n');
 	getline(cin, inputLine);
 }
 
-void SaveObjects(vector<PIPE>& pipes, vector<STATION>& stations)                                                 //
-{
+
+void DownloadPipes(vector<PIPE>& pipes) {
+	ifstream fin;
+	fin.open("tenyaeva.txt", ios::in);
+	if (fin.is_open())
+	{
+		int size;
+		fin >> size;
+		if (fin.fail())
+		{
+			fin.close();
+			return;
+		}
+		for (int i = 0; i < size; i++)
+		{
+			PIPE pipe;
+			//fin >> ws;
+			//getline(fin, pipe.title);
+			//fin >> pipe.title;
+			INPUT_LINE(fin, pipe.title);
+			fin >> pipe.length;
+			fin >> pipe.diameter;
+			fin >> pipe.repair;
+			pipes.push_back(pipe);
+		}
+	}
+}
+
+void DownloadStations(vector<STATION>& stations) {
+	ifstream fin;
+	fin.open("tenyaeva.txt", ios::in);
+	if (fin.is_open())
+	{
+		int size;
+		fin >> size;
+		if (fin.fail())
+		{
+			fin.close();
+			return;
+		}
+		for (int i = 0; i < size * 4 + 1; ++i) {
+			string str;
+			getline(fin, str);
+		}
+		fin >> size;
+		for (int i = 0; i < size; i++)
+		{
+			STATION station;
+			//fin >> ws;
+			//getline(fin, station.name);
+			//fin >> station.name;
+			INPUT_LINE(fin, station.name);
+			fin >> station.workshop;
+			fin >> station.inOperation;
+			fin >> station.effectiveness;
+			stations.push_back(station);
+		}
+	}
+}
+
+void SavePipes(vector<PIPE>& pipes) {
+	vector<STATION> stations;
+	DownloadStations(stations);
 	ofstream fout;
 	fout.open("tenyaeva.txt", ios::out);
 	if (fout.is_open())
@@ -239,65 +212,51 @@ void SaveObjects(vector<PIPE>& pipes, vector<STATION>& stations)                
 			fout << stations[i].inOperation << endl;
 			fout << stations[i].effectiveness << endl;
 		}
-		fout.close();
 	}
+	fout.close();
 }
 
-void DownloadObjects(vector<PIPE>& pipes, vector<STATION>& stations)                            //
-{
-	ifstream fin;
-	fin.open("tenyaeva.txt", ios::in);
-	if (fin.is_open())
+void SaveStations(vector<STATION>& stations) {
+	vector<PIPE> pipes;
+	DownloadPipes(pipes);
+	ofstream fout;
+	fout.open("tenyaeva.txt", ios::out);
+	if (fout.is_open())
 	{
-		int size;
-		fin >> size;
-		if (fin.fail())
+		fout << pipes.size() << endl;
+		for (int i = 0; i < pipes.size(); i++)
 		{
-			fin.close();
-			return;
+			fout << pipes[i].title << endl;
+			fout << pipes[i].length << endl;
+			fout << pipes[i].diameter << endl;
+			fout << pipes[i].repair << endl;
 		}
-		for (int i = 0; i < size; i++)
+		fout << stations.size() << endl;
+		for (int i = 0; i < stations.size(); i++)
 		{
-			PIPE pipe;
-			fin >> ws;                            
-			getline(fin, pipe.title);
-			fin >> pipe.length;
-			fin >> pipe.diameter;
-			fin >> pipe.repair;
-			pipes.push_back(pipe);
+			fout << stations[i].name << endl;
+			fout << stations[i].workshop << endl;
+			fout << stations[i].inOperation << endl;
+			fout << stations[i].effectiveness << endl;
 		}
-		fin >> size;
-		if (fin.fail())
-		{
-			fin.close();
-			return;
-		}
-		for (int i = 0; i < size; i++)
-		{
-			STATION station;
-			fin >> ws;
-			getline(fin, station.name);
-			fin >> station.workshop;
-			fin >> station.inOperation;
-			fin >> station.effectiveness;
-			stations.push_back(station);
-		}
-		fin.close();
 	}
+	fout.close();
 }
 
 void PrintMENU()
 {
 	cout << "[MENU]" << endl
-		<< "1. Add a pipe" << endl
-		<< "2. Add a compressor station" << endl
-		<< "3. Viewing all objects" << endl
-		<< "4. Edit a pipe" << endl
-		<< "5. Starting the station workshop" << endl
-		<< "6. Stopping the station workshop" << endl
-		<< "7. Save to file" << endl
-		<< "8. Upload from file" << endl
-		<< "0. Exit" << endl << endl;
+		<< "0.  Exit" << endl
+		<< "1.  Add a pipe" << endl
+		<< "2.  Add a compressor station" << endl
+		<< "3.  Viewing all objects" << endl
+		<< "4.  Edit a pipe" << endl
+		<< "5.  Starting the station workshop" << endl
+		<< "6.  Stopping the station workshop" << endl
+		<< "7.  Save pipes to file" << endl
+		<< "8.  Load pipes from file" << endl
+		<< "9.  Save stations to file" << endl
+		<< "10. Load stations from file" << endl << endl;
 }
 
 int main()
@@ -309,7 +268,8 @@ int main()
 	{
 		system("cls");
 		PrintMENU();
-		int i = InputInt("Select a menu item: ", 0, 8);
+		cout << "Select a menu item: ";
+		int i = GetCorrectNumber<int>(0, 10);
 		switch (i)
 		{
 			/* Add pipe */
@@ -382,7 +342,8 @@ int main()
 				cout << '[' << i + 1 << "] ";
 				pipes[i].PrintSimplified();
 			}
-			int i = InputInt("Choose pipe number: ", 1, pipes.size());
+			cout << "Choose pipe number: ";
+			int i = GetCorrectNumber<int>(1, pipes.size());
 			pipes[i - 1].EditPIPE();
 			pipes[i - 1].Print();
 			WaitForENTER();
@@ -405,7 +366,8 @@ int main()
 				cout << '[' << i + 1 << "] ";
 				stations[i].PrintSimplified();
 			}
-			int i = InputInt("Station number to start: ", 1, stations.size());
+			cout << "Station number to start: ";
+			int i = GetCorrectNumber<int>(1, stations.size());
 			stations[i - 1].StartWorkshopsSTATION();
 			WaitForENTER();
 			break;
@@ -427,35 +389,55 @@ int main()
 				cout << '[' << i + 1 << "] ";
 				stations[i].PrintSimplified();
 			}
-			int i = InputInt("Station number to stop: ", 1, stations.size());
+			cout << "Station number to stop: ";
+			int i = GetCorrectNumber<int>(1, stations.size());
 			stations[i - 1].StopWorkshopsSTATION();
 			WaitForENTER();
 			break;
 		}
-		/* Save to file */
+		/* Save pipes to file */
 		case 7:
 		{
 			system("cls");
-			cout << "[Save to file]" << endl;
-			SaveObjects(pipes, stations);
-			cout << "Objects successfully saved!" << endl;
+			cout << "[Save pipes to file]" << endl;
+			SavePipes(pipes);
+			cout << "Pipes successfully saved!" << endl;
 			WaitForENTER();
 			break;
 		}
-		/* Upload from file */
+		/* Load pipes from file */
 		case 8:
 		{
 			system("cls");
-			cout << "[Upload from file]" << endl;
+			cout << "[Load pipes from file]" << endl;
 			pipes.clear();
-			stations.clear();
-			DownloadObjects(pipes, stations);
+			DownloadPipes(pipes);
 			cout << "Loaded pipes:" << endl;
 			for (int i = 0; i < pipes.size(); i++)
 			{
 				cout << "| " << i + 1 << " ";
 				pipes[i].PrintSimplified();
 			}
+			WaitForENTER();
+			break;
+		}
+		/* Save stations to file */
+		case 9:
+		{
+			system("cls");
+			cout << "[Save stations to file]" << endl;
+			SaveStations(stations);
+			cout << "Stations successfully saved!" << endl;
+			WaitForENTER();
+			break;
+		}
+		/* Load stations from file */
+		case 10:
+		{
+			system("cls");
+			cout << "[Load stations from file]" << endl;
+			stations.clear();
+			DownloadStations(stations);
 			cout << "Loaded stations:" << endl;
 			for (int i = 0; i < stations.size(); i++)
 			{
@@ -475,6 +457,7 @@ int main()
 			system("cls");
 			cout << "Wrong action!" << endl;
 			WaitForENTER();
+			break;
 		}
 		}
 	}
