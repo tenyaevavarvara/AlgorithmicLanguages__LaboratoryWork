@@ -3,6 +3,7 @@
 
 #define INPUT_LINE(in, str) getline(in>>std::ws, str);
 
+/*
 #define PRINT_PARAM(out, x) out<< #x << "=" << x << std::endl
 
 class redirect_output_wrapper
@@ -23,8 +24,7 @@ public:
 		stream.rdbuf(dest.rdbuf());
 	}
 };
-
-
+*/
 
 template <typename T>
 T GetCorrectNumber(T min, T max)
