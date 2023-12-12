@@ -130,6 +130,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="logger.h" />
+    <ClInclude Include="menu.h" />
     <ClInclude Include="objects.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

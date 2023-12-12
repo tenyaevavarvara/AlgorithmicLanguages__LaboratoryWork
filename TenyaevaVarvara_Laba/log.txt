@@ -1,0 +1,18 @@
+Added new pipe: 1123
+Added new pipe: 1125
+Edited pipe: 1125
+Loaded 1 stations from file: tenyaeva.txt
+Edited station: 1018
+Edited station: 1018
+Loaded 4 pipes from file: tenyaeva.txt
+Loaded 1 stations from file: tenyaeva.txt
+Saved 5 pipes to file: tenyaeva.txt
+Saved 1 stations to file: tenyaeva.txt
+Saved 1 stations to file: test.txt
+Loaded 5 pipes from file: tenyaeva.txt
+Deleted pipe: 1074
+Loaded 5 pipes from file: tenyaeva.txt
+Loaded 5 pipes from file: tenyaeva.txt
+Loaded 5 pipes from file: tenyaeva.txt
+Loaded 1 stations from file: tenyaeva.txt
+Added new compressor station: 1126
