@@ -13,8 +13,9 @@ string inputFilename()
     string filename;
     cout << "Input filename (enter for tenyaeva.txt): ";
     std::cin.ignore(10000, '\n');
-    INPUT_LINE(cin, filename);
+    getline(cin, filename);
     if (filename == "") filename = "tenyaeva.txt";
+    logValue(filename);
     return filename;
 }
 
