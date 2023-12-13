@@ -1,18 +1,179 @@
-Added new pipe: 1123
-Added new pipe: 1125
-Edited pipe: 1125
-Loaded 1 stations from file: tenyaeva.txt
-Edited station: 1018
-Edited station: 1018
-Loaded 4 pipes from file: tenyaeva.txt
-Loaded 1 stations from file: tenyaeva.txt
-Saved 5 pipes to file: tenyaeva.txt
-Saved 1 stations to file: tenyaeva.txt
-Saved 1 stations to file: test.txt
-Loaded 5 pipes from file: tenyaeva.txt
-Deleted pipe: 1074
-Loaded 5 pipes from file: tenyaeva.txt
-Loaded 5 pipes from file: tenyaeva.txt
-Loaded 5 pipes from file: tenyaeva.txt
-Loaded 1 stations from file: tenyaeva.txt
-Added new compressor station: 1126
+1
+a
+1
+1
+0
+2
+b
+2
+2
+0.2
+8
+10
+a
+3
+10
+a
+3
+4
+1
+5
+1
+á
+3
+3
+1
+3
+1
+á
+6
+6
+0
+1
+c
+8
+8
+0
+3
+5
+5
+1
+3
+6
+2
+7
+2
+2
+6
+2
+1
+3
+13
+2
+50
+8
+4
+3
+3
+9
+á
+á
+c
+3
+10
+á
+á
+c
+4
+2
+3
+11
+b
+3
+3
+12
+1
+a
+12
+1
+c
+12
+2
+1
+13
+1
+a
+13
+1
+b
+13
+2
+100
+13
+2
+50
+14
+1
+45
+4
+5
+5
+0
+1
+14
+1
+3
+5
+5
+0
+0
+14
+2
+c
+1
+14
+2
+d
+14
+2
+c
+0
+3
+1
+fff
+6
+6
+0
+14
+2
+fff
+1
+14
+2
+f
+0
+14
+2
+f
+1
+14
+3
+1
+0
+0
+1
+ooo
+7
+7
+0
+8
+a.txt
+0
+1
+ooo
+9
+9
+1
+14
+2
+o
+0
+1
+ooo
+5
+5
+0
+14
+2
+o
+1
+1
+oop
+9
+6
+0
+14
+2
+o
+0
+0

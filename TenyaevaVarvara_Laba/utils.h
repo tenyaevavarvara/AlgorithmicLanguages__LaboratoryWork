@@ -1,7 +1,8 @@
 #pragma once
 #include <iostream>
+#include "logger.h"
 
-#define INPUT_LINE(in, str) getline(in>>std::ws, str);
+#define INPUT_LINE(in, str) getline(in>>std::ws, str); logValue(str);
 
 template <typename T>
 T GetCorrectNumber(T min, T max)
@@ -15,6 +16,6 @@ T GetCorrectNumber(T min, T max)
 		std::cin.ignore(10000, '\n');
 		std::cout << "Type number (" << min << "-" << max << "):";
 	}
-	//std::cerr << x << std::endl;
+	logValue(x);
 	return x;
 }

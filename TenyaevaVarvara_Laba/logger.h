@@ -2,7 +2,8 @@
 
 static std::ofstream logger;
 
-void log(std::string message) {
+template <typename T>
+void logValue(T message) {
     logger.open("log.txt", std::ios_base::app);
     logger << message << std::endl;
     logger.close();

@@ -44,7 +44,7 @@ protected:
             }
             fin.close();
         } else {
-            idCounter = 1000;
+            idCounter = 10000;
         }
         return idCounter;
     }
@@ -65,8 +65,10 @@ public:
     int id;
 
 private:
-    inline static int idCounter = 0;
+    static int idCounter;
 };
+
+int Object::idCounter = 0;
 
 class Pipe : public Object 
 {
@@ -377,4 +379,14 @@ vector<int> findStationsByFreeWorkshopProcent(const unordered_map<int, Station>&
         }
     }
     return ids;
+}
+
+void editPipes(vector<int> &ids, unordered_map<int, Pipe>& pipes)
+{
+    cout << "Pipe sign 'under repair' (0 - repairing, 1 - works): ";
+	bool repair = GetCorrectNumber<int>(0, 1);
+    for (auto id : ids)
+    {
+        pipes[id].repair = repair;
+    }
 }
