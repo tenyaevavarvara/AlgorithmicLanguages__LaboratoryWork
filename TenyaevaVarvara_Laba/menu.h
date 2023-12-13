@@ -5,6 +5,7 @@
 
 #include "objects.h"
 #include "utils.h"
+#include "logger.h"
 
 using namespace std;
 
@@ -404,11 +405,15 @@ void mainLoop() {
             }
             cout << "[Batch editing]" << endl;
             cout << "Choose action:" << endl;
+            cout << "0. Back" << endl;
             cout << "1. Choose pipes to edit by ids" << endl;
             cout << "2. Choose pipes to edit by string" << endl;
-            cout << "3. Choose pipes to edit by repair" << endl << endl;
+            cout << "3. Choose pipes to edit by repair" << endl;
+            cout << "4. Choose pipes to delete by ids" << endl;
+            cout << "5. Choose pipes to delete by string" << endl;
+            cout << "6. Choose pipes to delete by repair" << endl << endl;
             cout << "Choose option: ";
-            int i = GetCorrectNumber<int>(1, 3);
+            int i = GetCorrectNumber<int>(0, 6);
             system("cls");
             if (i == 1)
             {
@@ -475,7 +480,6 @@ void mainLoop() {
                 cout << endl;
                 waitForEnter();
                 break;
-                editPipes(ids, pipesMap);
             }
             else if (i == 2)
             {
@@ -546,8 +550,139 @@ void mainLoop() {
                 waitForEnter();
                 break;
             }
-            waitForEnter();
-            break;
+            else if (i == 4)
+            {
+                cout << "Pipes:" << endl;
+                for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
+                {
+                    it->second.print();
+                }
+                cout << endl;
+                vector<int> ids;
+                int id = -1;
+                while (id != 0)
+                {
+                    cout << "Enter id (0 to stop): ";
+                    id = GetCorrectNumber<int>(0, INT_MAX);
+                    if (id != 0)
+                    {
+                        if (pipesMap.find(id) != pipesMap.end())
+                        {
+                            bool contains = false;
+                            for (auto it = ids.begin(); it != ids.end(); it++)
+                            {
+                                if (*it == id)
+                                {
+                                    contains = true;
+                                    break;
+                                }
+                            }
+                            if (!contains)
+                            {
+                                ids.push_back(id);
+                            }
+                            else
+                            {
+                                cout << "Pipe already in list!" << endl;
+                            }
+                        }
+                        else
+                        {
+                            cout << "Pipe not found!" << endl;
+                        }
+                    }
+                }
+                system("cls");
+                if (ids.size() == 0)
+                {
+                    cout << "Nothing to edit!" << endl;
+                    waitForEnter();
+                    break;
+                }
+                cout << "Pipes to delete: ";
+                for (auto id : ids)
+                {
+                    cout << id << " ";
+                }
+                cout << endl;
+                cout << "Deleted " << ids.size() << " pipes!" << endl;
+                for (auto id : ids)
+                {
+                    pipesMap.erase(id);
+                }
+                cout << endl;
+                waitForEnter();
+                break;
+            }
+            else if (i == 5)
+            {
+                cout << "Pipes:" << endl;
+                for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
+                {
+                    it->second.print();
+                }
+                cout << endl;
+                string str;
+                cout << "Enter string: ";
+                INPUT_LINE(cin, str);
+                auto ids = findPipesByString(pipesMap, str);
+                if (ids.size() == 0)
+                {
+                    cout << "Pipes not found!" << endl;
+                    waitForEnter(false);
+                    break;
+                }
+                system("cls");
+                cout << "Found " << ids.size() << " pipes:" << endl;
+                for (auto id : ids)
+                {
+                    pipesMap[id].print();
+                }
+                cout << endl;
+                cout << "Deleted " << ids.size() << " pipes!" << endl;
+                for (auto id : ids)
+                {
+                    pipesMap.erase(id);
+                }
+                waitForEnter(false);
+                break;
+            }
+            else if (i == 6)
+            {
+                cout << "Pipes:" << endl;
+                for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
+                {
+                    it->second.print();
+                }
+                cout << endl;
+                cout << "Enter repair (0 - repairing, 1 - works): ";
+                int repair = GetCorrectNumber<int>(0, 1);
+                auto ids = findPipesByRepair(pipesMap, repair);
+                system("cls");
+                if (ids.size() == 0)
+                {
+                    cout << "Pipes not found!" << endl;
+                    waitForEnter();
+                    break;
+                }
+                cout << "Found " << ids.size() << " pipes:" << endl;
+                for (auto id : ids)
+                {
+                    pipesMap[id].print();
+                }
+                cout << endl;
+                cout << "Deleted " << ids.size() << " pipes!" << endl;
+                for (auto id : ids)
+                {
+                    pipesMap.erase(id);
+                }
+                waitForEnter();
+                break;
+            }
+            else
+            {
+                break;
+            }
         }
         /* Exit */
         case 0:
