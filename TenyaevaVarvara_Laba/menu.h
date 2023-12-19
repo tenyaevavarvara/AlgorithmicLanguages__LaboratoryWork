@@ -9,6 +9,24 @@
 
 using namespace std;
 
+// Stopping on 0
+int inputExistingId(vector<int>& ids)
+{
+    if (ids.empty()) return 0;
+    int maxId = *(max_element(ids.begin(), ids.end()));
+    while (true)
+    {
+        int id = GetCorrectNumber<int>(0, maxId);
+        if (id == 0) return id;
+        if (std::find(ids.begin(), ids.end(), id) != ids.end())
+        {
+            return id;
+        }
+        else cout << "ID doesn't exist, try again: ";
+    }
+}
+
+
 string inputFilename()
 {
     string filename;
@@ -46,7 +64,10 @@ void printMenu()
         << "11. Load stations from file" << endl
         << "12. Find pipes" << endl
         << "13. Find stations" << endl
-        << "14. Batch pipes editing" << endl << endl;
+        << "14. Batch pipes editing" << endl
+        << "15. Connect stations" << endl
+        << "16. Disconnect stations" << endl
+        << "17. View topological sorted graph" << endl << endl;
 }
 
 void mainLoop() {
@@ -57,7 +78,7 @@ void mainLoop() {
         system("cls");
         printMenu();
         cout << "Select a menu item: ";
-        int i = GetCorrectNumber<int>(0, 14);
+        int i = GetCorrectNumber<int>(0, 17);
         switch (i)
         {
             /* Add pipe */
@@ -683,6 +704,191 @@ void mainLoop() {
             {
                 break;
             }
+        }
+        /* Connect stations */
+        case 15:
+        {
+            bool running = true;
+            while (running)
+            {
+                vector<int> freeStations;
+                vector<int> freePipes;
+                /* Adding only free stations (has stopped workshop) */
+                for (auto it = stationsMap.begin(); it != stationsMap.end(); it++)
+                {
+                    if ((it->second.workshop - it->second.inOperation) > 0)
+                    {
+                        freeStations.push_back(it->first);
+                    }
+                }
+                /* Adding only free pipes (has no nodes) */
+                for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
+                {
+                    if ((it->second.nodes.first == 0) && (it->second.nodes.second == 0))
+                    {
+                        freePipes.push_back(it->first);
+                    }
+                }
+                /* Nothing to connect */
+                if (freeStations.size() < 2 || freePipes.size() == 0)
+                {
+                    cout << "Nothing to connect!" << endl;
+                    break;
+                }
+                /* Print free stations */
+                cout << "List of free stations:" << endl;
+                for (auto _id : freeStations)
+                {
+                    stationsMap[_id].print();
+                }
+                cout << endl;
+                /* Ask user to write stations to connect */
+                cout << "Type first station id to connect (0 - exit): ";
+                // int id1 = GetCorrectNumber<int>(0, freeStations.size());
+                int id1 = inputExistingId(freeStations);
+                freeStations.erase(std::remove(freeStations.begin(), freeStations.end(), id1), freeStations.end());
+                if (id1 == 0) { running == false; break; }
+                cout << "Type second station id to connect (0 - exit): ";
+                // int id2 = GetCorrectNumber<int>(0, freeStations.size());
+                int id2 = inputExistingId(freeStations);
+                if (id2 == 0) { running == false; break; }
+                // ids are the same
+                if (id1 == id2)
+                {
+                    cout << "Ids are the same!" << endl;
+                    break;
+                }
+                /* Choose free pipe */
+                system("cls");
+                cout << "Stations to connect: " << endl;
+                stationsMap[id1].print();
+                stationsMap[id2].print();
+                cout << endl;
+                cout << "List of free pipes:" << endl;
+                for (auto _id : freePipes)
+                {
+                    pipesMap[_id].print();
+                }
+                cout << endl;
+                /* Ask user to write pipe id to connect */
+                cout << "Choose pipe id to connect (0 - exit): ";
+                int pipeId = inputExistingId(freePipes);
+                // int pipeId = GetCorrectNumber<int>(0, freePipes.size());
+                if (pipeId == 0) { running == false; break; }
+                /* Connect stations */
+                pipesMap[pipeId].nodes = make_pair(id1, id2);
+                stationsMap[id1].inOperation++;
+                stationsMap[id2].inOperation++;
+                /* Print result */
+                system("cls");
+                cout << "Stations successfully connected! " << endl;
+                stationsMap[id1].print();
+                stationsMap[id2].print();
+                pipesMap[pipeId].print();
+                cout << endl;
+                waitForEnter();
+            }
+            waitForEnter();
+            break;
+        }
+        /* Disconnect stations */
+        case 16:
+        {
+            bool running = true;
+            while (running)
+            {
+                vector<int> edgesIds;
+                /* Searching for connected to pipes stations */
+                for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
+                {
+                    if ((it->second.nodes.first != 0) && (it->second.nodes.second != 0))
+                    {
+                        edgesIds.push_back(it->first);
+                    }
+                }
+                /* Nothing to delete */
+                if (edgesIds.size() == 0)
+                {
+                    cout << "Nothing to delete!" << endl;
+                    waitForEnter();
+                    break;
+                }
+                /* Choose edge to delete */
+                system("cls");
+                cout << "List of edges (pipes):" << endl;
+                for (auto id : edgesIds)
+                {
+                    pipesMap[id].print();
+                }
+                cout << "Type edge id to delete (0 - exit): ";
+                int id = inputExistingId(edgesIds);
+                if (id == 0) { running == false; break; }
+                /* Delete edge */
+                system("cls");
+                pipesMap[id].nodes = make_pair(0, 0);
+                cout << "Edge successfully deleted! " << endl;
+                waitForEnter();
+            }
+            break;
+        }
+        /* View topological sorted graph */
+        case 17:
+        {
+            vector<pair<int, int>> edges;
+            set<int> verticesSet;
+            for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
+            {
+                if ((it->second.nodes.first != 0) && (it->second.nodes.second != 0))
+                {
+                    edges.push_back(make_pair(it->second.nodes.first, it->second.nodes.second));
+                    verticesSet.insert(it->second.nodes.first);
+                    verticesSet.insert(it->second.nodes.second);
+                }
+            }
+
+            int i = 0;
+            map<int, int> fromToMap;
+            map<int, int> toFromMap;
+            for (auto vertice : verticesSet)
+            {
+                fromToMap[vertice] = i;
+                toFromMap[i] = vertice;
+                i++;
+            }
+
+            vector<int> adj[verticesSet.size()];
+            for (auto edge : edges) {
+                int u = fromToMap[edge.first];
+                int v = fromToMap[edge.second];
+                adj[u].push_back(v);
+            }
+
+
+            auto result = topologicalSort(adj, verticesSet.size());
+            cout << "Vertices order: " << endl;
+            i = 0;
+            for (auto id : result)
+            {
+                cout << "[" << ++i << "] " << toFromMap[id] << " " << stationsMap[toFromMap[id]].title << endl;
+            }
+            cout << endl;
+
+            cout << "Topological sorted graph: " << endl;
+            for (auto id : result)
+            {
+                for (auto edge : edges)
+                {
+                    int realId = toFromMap[id];
+                    if (edge.first == realId)
+                    {
+                        cout << edge.first << " -> " << edge.second << endl;
+                    }
+                }
+            }
+
+            cout << endl;
+            waitForEnter();
+            break;
         }
         /* Exit */
         case 0:
