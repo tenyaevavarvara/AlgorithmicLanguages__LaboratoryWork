@@ -12,9 +12,9 @@
 
 using namespace std;
 
-const int MAX_STATION_WORKSHOP = 1000;
+const int MAX_STATION_WORKSHOP = 100;
 const int MAX_PIPE_LENGTH = 1000;
-const int MAX_PIPE_DIAMETER = 1000;
+const int MAX_PIPE_DIAMETER = 1400;
 
 class Object
 {
@@ -104,8 +104,13 @@ public:
         INPUT_LINE(cin, title);
         cout << "Pipe length (metre): ";
         length = GetCorrectNumber<int>(1, MAX_PIPE_LENGTH);
-        cout << "Pipe diameter (centimetre): ";
+        cout << "Pipe diameter (500, 700, 1000 or 1400 mm): ";
         diameter = GetCorrectNumber<int>(1, MAX_PIPE_DIAMETER);
+        while (diameter != 500 && diameter != 700 && diameter != 1000 && diameter != 1400) {
+            cout << "Diameter should be 500, 700, 1000 or 1400 mm!" << endl;
+            cout << "Pipe diameter (500, 700, 1000 or 1400 mm): ";
+            diameter = GetCorrectNumber<int>(1, MAX_PIPE_DIAMETER);
+        }
         cout << "Pipe sign 'under repair' (0 - repairing, 1 - works): ";
         repair = GetCorrectNumber<int>(0, 1);
         return Pipe(title, length, diameter, repair);
@@ -156,14 +161,12 @@ public:
     {
         string title;
         int workshop;
-        int inOperation;
+        int inOperation = 0;
         double effectiveness;
         cout << "Name of the compressor station: ";
         INPUT_LINE(cin, title);
         cout << "Number of workshops in the compressor station: ";
         workshop = GetCorrectNumber<int>(1, MAX_STATION_WORKSHOP);
-        cout << "Number of workshops in operation at the compressors station: ";
-        inOperation = GetCorrectNumber<int>(0, workshop);
         cout << "Compressor station effiency: ";
         effectiveness = GetCorrectNumber<double>(0, 1);
         return Station(title, workshop, inOperation, effectiveness);
@@ -240,7 +243,7 @@ void downloadStations(string filename, unordered_map<int, Station>& stations)
             double effectiveness;
             string title;
             fin >> id;
-            INPUT_LINE(fin, title);
+            getline(fin >> std::ws, title);
             fin >> workshop >> inOperation >> effectiveness;
             stations[id] = Station(title, workshop, inOperation, effectiveness, id);
         }
@@ -267,7 +270,7 @@ void downloadPipes(string filename, unordered_map<int, Pipe>& pipes)
             double length;
             bool repair;
             fin >> id;
-            INPUT_LINE(fin, title);
+            getline(fin >> std::ws, title);
             fin >> length >> diameter >> repair >> first >> second;
             pipes[id] = Pipe(title, length, diameter, repair, id, first, second);
         }

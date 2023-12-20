@@ -56,18 +56,16 @@ void printMenu()
         << "3.  Viewing all objects" << endl
         << "4.  Delete object" << endl
         << "5.  Edit a pipe" << endl
-        << "6.  Starting the station workshop" << endl
-        << "7.  Stopping the station workshop" << endl
-        << "8.  Save pipes to file" << endl
-        << "9.  Load pipes from file" << endl
-        << "10. Save stations to file" << endl
-        << "11. Load stations from file" << endl
-        << "12. Find pipes" << endl
-        << "13. Find stations" << endl
-        << "14. Batch pipes editing" << endl
-        << "15. Connect stations" << endl
-        << "16. Disconnect stations" << endl
-        << "17. View topological sorted graph" << endl << endl;
+        << "6.  Save pipes to file" << endl
+        << "7.  Load pipes from file" << endl
+        << "8. Save stations to file" << endl
+        << "9. Load stations from file" << endl
+        << "10. Find pipes" << endl
+        << "11. Find stations" << endl
+        << "12. Batch pipes editing" << endl
+        << "13. Connect stations" << endl
+        << "14. Disconnect stations" << endl
+        << "15. View topological sorted graph" << endl << endl;
 }
 
 void mainLoop() {
@@ -78,7 +76,7 @@ void mainLoop() {
         system("cls");
         printMenu();
         cout << "Select a menu item: ";
-        int i = GetCorrectNumber<int>(0, 17);
+        int i = GetCorrectNumber<int>(0, 15);
         switch (i)
         {
             /* Add pipe */
@@ -199,63 +197,8 @@ void mainLoop() {
             waitForEnter();
             break;
         }
-        /* Starting the station workshop */
-        case 6:
-        {
-            system("cls");
-            cout << "[Starting the station workshop]" << endl;
-            if (stationsMap.size() == 0)
-            {
-                cout << "There are no stations!" << endl;
-                waitForEnter();
-                break;
-            }
-            cout << "Stations:" << endl;
-            for (auto it = stationsMap.begin(); it != stationsMap.end(); it++)
-            {
-                it->second.print();
-            }
-            cout << "Choose station number: ";
-            int i = GetCorrectNumber<int>(1, INT_MAX);
-            if (stationsMap.find(i) == stationsMap.end())
-            {
-                cout << "Station not found!" << endl;
-                waitForEnter();
-                break;
-            }
-            stationsMap[i].startWorkshops();
-            waitForEnter();
-            break;
-        }
-        /* Stopping the station workshop */
-        case 7:
-        {
-            system("cls");
-            cout << "[Stopping the station workshop]" << endl;
-            if (stationsMap.size() == 0)
-            {
-                cout << "There are no stations!" << endl;
-                waitForEnter();
-                break;
-            }
-            for (auto it = stationsMap.begin(); it != stationsMap.end(); it++)
-            {
-                it->second.print();
-            }
-            cout << "Choose station number: ";
-            int i = GetCorrectNumber<int>(1, INT_MAX);
-            if (stationsMap.find(i) == stationsMap.end())
-            {
-                cout << "Station not found!" << endl;
-                waitForEnter();
-                break;
-            }
-            stationsMap[i].stopWorkshops();
-            waitForEnter();
-            break;
-        }
         /* Save pipes to file */
-        case 8:
+        case 6:
         {
             system("cls");
             cout << "[Save pipes to file]" << endl;
@@ -266,7 +209,7 @@ void mainLoop() {
             break;
         }
         /* Load pipes from file */
-        case 9:
+        case 7:
         {
             system("cls");
             unordered_map<int, Pipe> map;
@@ -283,7 +226,7 @@ void mainLoop() {
             break;
         }
         /* Save stations to file */
-        case 10:
+        case 8:
         {
             system("cls");
             cout << "[Save stations to file]" << endl;
@@ -294,7 +237,7 @@ void mainLoop() {
             break;
         }
         /* Load stations from file */
-        case 11:
+        case 9:
         {
             system("cls");
             unordered_map<int, Station> map;
@@ -311,7 +254,7 @@ void mainLoop() {
             break;
         }
         /* Find pipes */
-        case 12:
+        case 10:
         {
             system("cls");
             cout << "[Find pipes]" << endl;
@@ -363,7 +306,7 @@ void mainLoop() {
             break;
         }
         /* Find stations */
-        case 13:
+        case 11:
         {
             system("cls");
             cout << "[Find stations]" << endl;
@@ -415,7 +358,7 @@ void mainLoop() {
             break;
         }
         /* Batch pipes editing */
-        case 14:
+        case 12:
         {
             system("cls");
             if (pipesMap.size() == 0)
@@ -706,9 +649,10 @@ void mainLoop() {
             }
         }
         /* Connect stations */
-        case 15:
+        case 13:
         {
             bool running = true;
+            bool ignore = true;
             while (running)
             {
                 vector<int> freeStations;
@@ -733,6 +677,7 @@ void mainLoop() {
                 if (freeStations.size() < 2 || freePipes.size() == 0)
                 {
                     cout << "Nothing to connect!" << endl;
+                    waitForEnter(ignore);
                     break;
                 }
                 /* Print free stations */
@@ -747,15 +692,16 @@ void mainLoop() {
                 // int id1 = GetCorrectNumber<int>(0, freeStations.size());
                 int id1 = inputExistingId(freeStations);
                 freeStations.erase(std::remove(freeStations.begin(), freeStations.end(), id1), freeStations.end());
-                if (id1 == 0) { running == false; break; }
+                if (id1 == 0) { running == false; break; waitForEnter(); }
                 cout << "Type second station id to connect (0 - exit): ";
                 // int id2 = GetCorrectNumber<int>(0, freeStations.size());
                 int id2 = inputExistingId(freeStations);
-                if (id2 == 0) { running == false; break; }
+                if (id2 == 0) { running == false; break; waitForEnter(); }
                 // ids are the same
                 if (id1 == id2)
                 {
                     cout << "Ids are the same!" << endl;
+                    waitForEnter();
                     break;
                 }
                 /* Choose free pipe */
@@ -787,14 +733,15 @@ void mainLoop() {
                 pipesMap[pipeId].print();
                 cout << endl;
                 waitForEnter();
+                ignore = false;
             }
-            waitForEnter();
             break;
         }
         /* Disconnect stations */
-        case 16:
+        case 14:
         {
             bool running = true;
+            bool ignore = true;
             while (running)
             {
                 vector<int> edgesIds;
@@ -810,7 +757,7 @@ void mainLoop() {
                 if (edgesIds.size() == 0)
                 {
                     cout << "Nothing to delete!" << endl;
-                    waitForEnter();
+                    waitForEnter(ignore);
                     break;
                 }
                 /* Choose edge to delete */
@@ -822,17 +769,20 @@ void mainLoop() {
                 }
                 cout << "Type edge id to delete (0 - exit): ";
                 int id = inputExistingId(edgesIds);
-                if (id == 0) { running == false; break; }
+                if (id == 0) { running == false; break; waitForEnter(); }
                 /* Delete edge */
                 system("cls");
+                stationsMap[pipesMap[id].nodes.first].inOperation--;
+                stationsMap[pipesMap[id].nodes.second].inOperation--;
                 pipesMap[id].nodes = make_pair(0, 0);
                 cout << "Edge successfully deleted! " << endl;
                 waitForEnter();
+                ignore = false;
             }
             break;
         }
         /* View topological sorted graph */
-        case 17:
+        case 15:
         {
             vector<pair<int, int>> edges;
             set<int> verticesSet;
