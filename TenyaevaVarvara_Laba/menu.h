@@ -856,7 +856,7 @@ void mainLoop() {
                 i++;
             }
 
-            vector<int> adj[verticesSet.size()];
+            vector<vector<int>> adj(verticesSet.size(), vector<int>());
             for (auto edge : edges) {
                 int u = fromToMap[edge.first];
                 int v = fromToMap[edge.second];

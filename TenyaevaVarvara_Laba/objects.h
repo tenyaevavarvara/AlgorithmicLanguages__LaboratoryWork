@@ -403,7 +403,7 @@ void editPipes(vector<int>& ids, unordered_map<int, Pipe>& pipes)
     }
 }
 
-vector<int> topologicalSort(vector<int> adj[], int V) {
+vector<int> topologicalSort(vector<vector<int>> adj, int V) {
     vector<int> in_degree(V, 0);
     vector<int> result;
 
