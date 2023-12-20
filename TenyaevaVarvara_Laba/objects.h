@@ -94,22 +94,26 @@ public:
         this->nodes.second = second;
     }
 
-    static Pipe newPipe()
+    static Pipe newPipe(int diameter = -1)
     {
         string title;
         double length;
-        int diameter;
         bool repair;
         cout << "Pipe kilometer mark (name): ";
         INPUT_LINE(cin, title);
         cout << "Pipe length (metre): ";
         length = GetCorrectNumber<int>(1, MAX_PIPE_LENGTH);
-        cout << "Pipe diameter (500, 700, 1000 or 1400 mm): ";
-        diameter = GetCorrectNumber<int>(1, MAX_PIPE_DIAMETER);
-        while (diameter != 500 && diameter != 700 && diameter != 1000 && diameter != 1400) {
-            cout << "Diameter should be 500, 700, 1000 or 1400 mm!" << endl;
+        if (diameter == -1) {
             cout << "Pipe diameter (500, 700, 1000 or 1400 mm): ";
             diameter = GetCorrectNumber<int>(1, MAX_PIPE_DIAMETER);
+            while (diameter != 500 && diameter != 700 && diameter != 1000 && diameter != 1400) {
+                cout << "Diameter should be 500, 700, 1000 or 1400 mm!" << endl;
+                cout << "Pipe diameter (500, 700, 1000 or 1400 mm): ";
+                diameter = GetCorrectNumber<int>(1, MAX_PIPE_DIAMETER);
+            }
+        }
+        else {
+            cout << "Pipe diameter (500, 700, 1000 or 1400 mm): " << diameter << endl;
         }
         cout << "Pipe sign 'under repair' (0 - repairing, 1 - works): ";
         repair = GetCorrectNumber<int>(0, 1);

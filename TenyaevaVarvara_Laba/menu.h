@@ -155,10 +155,25 @@ void mainLoop() {
             int i = GetCorrectNumber<int>(1, INT_MAX);
             if (pipesMap.find(i) != pipesMap.end())
             {
-                pipesMap.erase(i);
+                if (pipesMap[i].nodes.first == 0 and pipesMap[i].nodes.second == 0)
+                {
+                    pipesMap.erase(i);
+                }
+                else
+                {
+                    cout << "Object is used! First exclude this object from the network." << endl;
+                }
             }
             else if (stationsMap.find(i) != stationsMap.end())
             {
+                for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
+                {
+                    if (it->second.nodes.first == i or it->second.nodes.second == i)
+                    {
+                        cout << "Object is used! First exclude this object from the network." << endl;
+                        break;
+                    }
+                }
                 stationsMap.erase(i);
             }
             else
@@ -674,7 +689,7 @@ void mainLoop() {
                     }
                 }
                 /* Nothing to connect */
-                if (freeStations.size() < 2 || freePipes.size() == 0)
+                if (freeStations.size() < 2)
                 {
                     cout << "Nothing to connect!" << endl;
                     waitForEnter(ignore);
@@ -710,17 +725,39 @@ void mainLoop() {
                 stationsMap[id1].print();
                 stationsMap[id2].print();
                 cout << endl;
+                // Choose pipe diameter
+                cout << "Choose pipe diameter (500, 700, 1000 or 1400 mm): ";
+                int diameter = GetCorrectNumber<int>(1, MAX_PIPE_DIAMETER);
+                while (diameter != 500 && diameter != 700 && diameter != 1000 && diameter != 1400) {
+                    cout << "Diameter should be 500, 700, 1000 or 1400 mm!" << endl;
+                    cout << "Pipe diameter (500, 700, 1000 or 1400 mm): ";
+                    diameter = GetCorrectNumber<int>(1, MAX_PIPE_DIAMETER);
+                }
+                // List of free pipes
+                int count = 0;
                 cout << "List of free pipes:" << endl;
                 for (auto _id : freePipes)
                 {
-                    pipesMap[_id].print();
+                    if (pipesMap[_id].diameter == diameter) {
+                        pipesMap[_id].print();
+                        count++;
+                    }
                 }
-                cout << endl;
-                /* Ask user to write pipe id to connect */
-                cout << "Choose pipe id to connect (0 - exit): ";
-                int pipeId = inputExistingId(freePipes);
-                // int pipeId = GetCorrectNumber<int>(0, freePipes.size());
-                if (pipeId == 0) { running == false; break; }
+                int pipeId = -1;
+                // Creating new pipe
+                if (count == 0)
+                {
+                    cout << "Pipes not found! Creating new one..." << endl;
+                    Pipe pipe = Pipe::newPipe(diameter);
+                    pipesMap[pipe.id] = pipe;
+                    pipeId = pipe.id;
+                }
+                else
+                {
+                    cout << "Choose pipe id (0 - exit): ";
+                    pipeId = inputExistingId(freePipes);
+                    if (pipeId == 0) { running == false; break; }
+                }
                 /* Connect stations */
                 pipesMap[pipeId].nodes = make_pair(id1, id2);
                 stationsMap[id1].inOperation++;
