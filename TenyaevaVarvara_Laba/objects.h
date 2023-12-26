@@ -1,14 +1,15 @@
-#include <iostream> 
-#include <fstream>
-#include <string>
-#include <queue>
 #include <map>
+#include <stack>
+#include <queue>
+#include <vector>
+#include <string>
 #include <climits>
+#include <fstream>
+#include <iostream> 
 #include <unordered_map>
 
+#include "math.h"
 #include "utils.h"
-#include <vector>
-#include <stack>
 
 using namespace std;
 
@@ -126,7 +127,12 @@ public:
             << "Length: " << length << "; "
             << "Diameter: " << diameter << "; "
             << ((repair == 0) ? "Repairing" : "Works") << "; "
+            << "Weight: " << getWeight() << "; "
             << "Nodes: " << nodes.first << " - " << nodes.second << endl;
+    }
+
+    double getWeight() {
+        return sqrt(std::pow(diameter / 100.0, 5) / (double)length);
     }
 
     void edit()
@@ -434,4 +440,63 @@ vector<int> topologicalSort(vector<vector<int>> adj, int V) {
                 q.push(x);
     }
     return result;
+}
+
+struct Edge {
+    int first;
+    int second;
+    double weight;
+};
+
+void dijkstra(std::vector<Edge>& edges, int numVertices, int startVertex, int endVertex) {
+    std::vector<std::vector<std::pair<int, int>>> adjacencyList(numVertices);
+
+    for (const auto& edge : edges) {
+        adjacencyList[edge.first].push_back({ edge.second, edge.weight });
+        adjacencyList[edge.second].push_back({ edge.first, edge.weight });
+    }
+
+    std::vector<int> distances(numVertices, std::numeric_limits<int>::max());
+    std::vector<int> predecessors(numVertices, -1);
+
+    distances[startVertex] = 0;
+
+    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> pq;
+    pq.push(std::make_pair(0, startVertex));
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        for (const auto& neighbor : adjacencyList[u]) {
+            int v = neighbor.first;
+            int weight = neighbor.second;
+
+            if (distances[u] != std::numeric_limits<int>::max() && distances[u] + weight < distances[v]) {
+                distances[v] = distances[u] + weight;
+                predecessors[v] = u;
+                pq.push(std::make_pair(distances[v], v));
+            }
+        }
+    }
+
+    std::stack<int> path;
+    int currentVertex = endVertex;
+    while (currentVertex != -1 && currentVertex != startVertex) {
+        path.push(currentVertex);
+        currentVertex = predecessors[currentVertex];
+    }
+
+    if (currentVertex == -1) {
+        std::cout << "No way from " << startVertex << " to " << endVertex << std::endl;
+        return;
+    }
+
+    std::cout << "Shortest way from " << startVertex << " to " << endVertex << " : ";
+    std::cout << startVertex << " ";
+    while (!path.empty()) {
+        std::cout << path.top() << " ";
+        path.pop();
+    }
+    std::cout << std::endl;
 }

@@ -65,7 +65,8 @@ void printMenu()
         << "12. Batch pipes editing" << endl
         << "13. Connect stations" << endl
         << "14. Disconnect stations" << endl
-        << "15. View topological sorted graph" << endl << endl;
+        << "15. View topological sorted graph" << endl
+        << "16. Shortest way" << endl << endl;
 }
 
 void mainLoop() {
@@ -76,7 +77,7 @@ void mainLoop() {
         system("cls");
         printMenu();
         cout << "Select a menu item: ";
-        int i = GetCorrectNumber<int>(0, 15);
+        int i = GetCorrectNumber<int>(0, 16);
         switch (i)
         {
             /* Add pipe */
@@ -876,6 +877,66 @@ void mainLoop() {
             cout << endl;
             waitForEnter();
             break;
+        }
+        /* Shortest way */
+        case 16:
+        {
+            vector<Edge> edges;
+            set<int> verticesSet;
+            for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
+            {
+                if ((it->second.nodes.first != 0) && (it->second.nodes.second != 0))
+                {
+                    Edge edge = { it->second.nodes.first, it->second.nodes.second, it->second.length };
+                    edges.push_back(edge);
+                    verticesSet.insert(it->second.nodes.first);
+                    verticesSet.insert(it->second.nodes.second);
+                }
+            }
+
+            int vertices = verticesSet.size();
+            int i = 0;
+            map<int, int> fromToMap;
+            map<int, int> toFromMap;
+            for (auto vertice : verticesSet)
+            {
+                fromToMap[vertice] = i;
+                toFromMap[i] = vertice;
+                i++;
+            }
+            vector<int> verticesVector = vector<int>(verticesSet.begin(), verticesSet.end());
+            verticesVector.push_back(0);
+
+
+            cout << "List of edges (pipes):" << endl;
+            for (auto id : pipesMap)
+            {
+                if ((id.second.nodes.first != 0) && (id.second.nodes.second != 0))
+                {
+                    cout << id.first << " " << id.second.nodes.first << " -> " << id.second.nodes.second << endl;
+                }
+            }
+            cout << endl;
+
+            cout << "Choose two stations: " << endl;
+            cout << "Type first station id (0 - exit): ";
+            int first = inputExistingId(verticesVector);
+            if (first == 0) break;
+            cout << "Type second station id (0 - exit): ";
+            int second = inputExistingId(verticesVector);
+            if (second == 0 or first == second) break;
+
+            first = fromToMap[first];
+            second = fromToMap[second];
+
+            vector<Edge> convertedEdges;
+            for (auto edge : edges)
+            {
+                Edge convertedEdge = { fromToMap[edge.first], fromToMap[edge.second], edge.weight };
+                convertedEdges.push_back(convertedEdge);
+            }
+            dijkstra(convertedEdges, verticesSet.size(), first, second);
+            waitForEnter();
         }
         /* Exit */
         case 0:
