@@ -948,7 +948,7 @@ void mainLoop() {
                     int u = fromToMap[edge.first];
                     int v = fromToMap[edge.second];
                     adj[u][v] = edge.weight;
-                    adj[v][u] = edge.weight;
+                    // adj[v][u] = edge.weight;
                 }
 
                 vector<int> path = getShortestPath(adj, first, second);
@@ -968,6 +968,12 @@ void mainLoop() {
                 {
                     cout << "[" << toFromMap[id] << "] " << stationsMap[toFromMap[id]].title << endl;
                 }
+                int length = 0;
+                for (int i = 0; i < path.size() - 1; i++) {
+                    length = length + adj[path[i]][path[i + 1]];
+                }
+                cout << "Length: " << length << endl;
+                
 
                 cout << endl;
                 waitForEnter();
@@ -1042,7 +1048,7 @@ void mainLoop() {
                     int u = fromToMap[edge.first];
                     int v = fromToMap[edge.second];
                     adj[u][v] = edge.weight;
-                    adj[v][u] = edge.weight;
+                    // adj[v][u] = edge.weight;
                 }
 
                 int flow = maxFlow(adj, first, second);
