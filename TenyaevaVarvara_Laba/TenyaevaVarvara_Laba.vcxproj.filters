@@ -23,10 +23,10 @@
     <ClInclude Include="utils.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="menu.h">
+    <ClInclude Include="logger.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="logger.h">
+    <ClInclude Include="menu.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="objects.h">
