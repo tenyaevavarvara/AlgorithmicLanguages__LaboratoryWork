@@ -888,7 +888,6 @@ void mainLoop() {
             {
                 if ((it->second.nodes.first != 0) && (it->second.nodes.second != 0) && (it->second.repair))
                 {
-                    cout << "1" << endl;
                     Edge edge = { it->second.nodes.first, it->second.nodes.second, it->second.length };
                     edges.push_back(edge);
                     verticesSet.insert(it->second.nodes.first);

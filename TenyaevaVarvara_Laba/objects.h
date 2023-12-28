@@ -133,12 +133,19 @@ public:
             << "Length: " << length << "; "
             << "Diameter: " << diameter << "; "
             << ((repair == 0) ? "Repairing" : "Works") << "; "
-            << "Weight: " << getWeight() << "; "
+            //<< "Weight: " << getWeight() << "; "
             << "Nodes: " << nodes.first << " - " << nodes.second << endl;
     }
 
     double getWeight() {
-        return sqrt(std::pow(diameter / 100.0, 5) / (double)length);
+        if (repair == 1)
+        {
+            return sqrt(std::pow(diameter / 100.0, 5) / (double)length);
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     void edit()
