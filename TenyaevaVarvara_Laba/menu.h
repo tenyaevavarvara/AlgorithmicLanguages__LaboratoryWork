@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "graph.h"
 #include "objects.h"
 #include "utils.h"
 #include "logger.h"
@@ -882,98 +883,50 @@ void mainLoop() {
         /* Shortest way */
         case 16:
         {
-            vector<Edge> edges;
-            set<int> verticesSet;
-            for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
-            {
-                if ((it->second.nodes.first != 0) && (it->second.nodes.second != 0) && (it->second.repair))
-                {
-                    Edge edge = { it->second.nodes.first, it->second.nodes.second, it->second.length };
-                    edges.push_back(edge);
-                    verticesSet.insert(it->second.nodes.first);
-                    verticesSet.insert(it->second.nodes.second);
-                }
-            }
+            auto adjMatrix = buildAdjMatrix(stationsMap, pipesMap, true);
+            auto usedStations = getUsedStations(pipesMap);
 
-            int i = 0;
-            int vertices = verticesSet.size();
-            map<int, int> fromToMap;
-            map<int, int> toFromMap;
-            for (auto vertice : verticesSet)
-            {
-                fromToMap[vertice] = i;
-                toFromMap[i] = vertice;
-                i++;
-            }
-            vector<int> verticesVector = vector<int>(verticesSet.begin(), verticesSet.end());
-            verticesVector.push_back(0);
-
-            i = 0;
             cout << "List of edges:" << endl;
-            for (auto id : pipesMap)
-            {
-                if ((id.second.nodes.first != 0) && (id.second.nodes.second != 0) && (id.second.repair))
-                {
-                    cout << "[" << id.second.nodes.first << "] " << stationsMap[id.second.nodes.first].title << " -> " << "[" << id.second.nodes.second << "] " << stationsMap[id.second.nodes.second].title << endl;
-                    i++;
-                }
-            }
-
-            if (i == 0) {
-                cout << "Nothing to choose!" << endl;
-                waitForEnter();
-                break;
-            }
-
+            printGraph(pipesMap);
             cout << endl;
 
-            cout << "Choose two stations: " << endl;
-            cout << "Type first station id (0 - exit): ";
-            int first = inputExistingId(verticesVector);
+            cout << "Type start station id (0 - exit): ";
+            int first = inputExistingId(usedStations);
             if (first == 0) break;
-            cout << "Type second station id (0 - exit): ";
-            int second = inputExistingId(verticesVector);
-            if (second == 0 or first == second) break;
-
-            first = fromToMap[first];
-            second = fromToMap[second];
-
-            vector<vector<int>> adj(vertices, vector<int>(vertices));
-            for (int i = 0; i < adj.size(); i++) {
-                for (int j = 0; j < adj.size(); j++) {
-                    adj[i][j] = INT_MAX;
-                }
-            }
-            for (auto edge : edges) {
-                int u = fromToMap[edge.first];
-                int v = fromToMap[edge.second];
-                adj[u][v] = edge.weight;
-                // adj[v][u] = edge.weight;
-            }
-
-            vector<int> path = getShortestPath(adj, first, second);
-            if (path.size() < 2) {
-                cout << "Path doesn't exist!" << endl;
+            cout << "Type destination station id (0 - exit): ";
+            int second = inputExistingId(usedStations);
+            if (second == 0) break;
+            if (first == second)
+            {
+                cout << "Source and target stations must be different!" << endl;
                 waitForEnter();
                 break;
             }
-            if (path[0] != first && path[path.size() - 1] != second) {
-                cout << "Path doesn't exist!" << endl;
+
+            auto path = getShortestPath(adjMatrix, stationsMap[first].verticeId, stationsMap[second].verticeId);
+
+            if (path.size() == 0)
+            {
+                cout << "No path!" << endl;
                 waitForEnter();
                 break;
             }
 
             cout << "Shortest way: " << endl;
-            for (auto id : path)
+            auto way = convertVerticesToStations(stationsMap, path);
+            for (int i = 0; i < way.size(); i++)
             {
-                cout << "[" << toFromMap[id] << "] " << stationsMap[toFromMap[id]].title << endl;
+                cout << way[i];
+                if (i != way.size() - 1) cout << " -> ";
             }
-            int length = 0;
-            for (int i = 0; i < path.size() - 1; i++) {
-                length = length + adj[path[i]][path[i + 1]];
-            }
-            cout << "Length: " << length << endl;
+            cout << endl;
 
+            int length = 0;
+            for (int i = 0; i < path.size() - 1; i++)
+            {
+                length += adjMatrix[path[i]][path[i + 1]];
+            }
+            cout << " = " << length << " km" << endl;
 
             cout << endl;
             waitForEnter();
@@ -982,83 +935,52 @@ void mainLoop() {
         /* Max flow */
         case 17:
         {
-            vector<Edge> edges;
-            set<int> verticesSet;
-            for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
-            {
-                if ((it->second.nodes.first != 0) && (it->second.nodes.second != 0) && (it->second.repair))
-                {
-                    Edge edge = { it->second.nodes.first, it->second.nodes.second, it->second.getWeight() };
-                    edges.push_back(edge);
-                    verticesSet.insert(it->second.nodes.first);
-                    verticesSet.insert(it->second.nodes.second);
-                }
-            }
+            auto adjMatrix = buildAdjMatrix(stationsMap, pipesMap, true);
+            auto usedStations = getUsedStations(pipesMap);
 
-            int i = 0;
-            int vertices = verticesSet.size();
-            map<int, int> fromToMap;
-            map<int, int> toFromMap;
-            for (auto vertice : verticesSet)
-            {
-                fromToMap[vertice] = i;
-                toFromMap[i] = vertice;
-                i++;
-            }
-            vector<int> verticesVector = vector<int>(verticesSet.begin(), verticesSet.end());
-            verticesVector.push_back(0);
-
-            i = 0;
             cout << "List of edges:" << endl;
-            for (auto id : pipesMap)
-            {
-                if ((id.second.nodes.first != 0) && (id.second.nodes.second != 0) && (id.second.repair))
-                {
-                    cout << "[" << id.second.nodes.first << "] " << stationsMap[id.second.nodes.first].title << " -> " << "[" << id.second.nodes.second << "] " << stationsMap[id.second.nodes.second].title << endl;
-                    i++;
-                }
-            }
-
-            if (i == 0) {
-                cout << "Nothing to choose!" << endl;
-                waitForEnter();
-                break;
-            }
-
+            printGraph(pipesMap);
             cout << endl;
 
-            cout << "Choose two stations: " << endl;
-            cout << "Type first station id (0 - exit): ";
-            int first = inputExistingId(verticesVector);
+            cout << "Type source station id (0 - exit): ";
+            int first = inputExistingId(usedStations);
             if (first == 0) break;
-            cout << "Type second station id (0 - exit): ";
-            int second = inputExistingId(verticesVector);
-            if (second == 0 or first == second) break;
-
-            first = fromToMap[first];
-            second = fromToMap[second];
-
-            vector<vector<int>> adj(vertices, vector<int>(vertices));
-            for (int i = 0; i < adj.size(); i++) {
-                for (int j = 0; j < adj.size(); j++) {
-                    adj[i][j] = INT_MAX;
-                }
-            }
-            for (auto edge : edges) {
-                int u = fromToMap[edge.first];
-                int v = fromToMap[edge.second];
-                adj[u][v] = edge.weight;
-                // adj[v][u] = edge.weight;
-            }
-
-            int flow = maxFlow(adj, first, second);
-            if (flow < 0 || flow > 100000) {
-                cout << "Path doesn't exist!" << endl;
+            cout << "Type target station id (0 - exit): ";
+            int second = inputExistingId(usedStations);
+            if (second == 0) break;
+            if (first == second)
+            {
+                cout << "Source and target stations must be different!" << endl;
                 waitForEnter();
                 break;
             }
-            cout << "Max flow: " << flow << endl;
-            cout << endl;
+
+            auto flows = getMaxFlow(adjMatrix, stationsMap[first].verticeId, stationsMap[second].verticeId);
+            if (flows.size() == 0)
+            {
+                cout << "No path!" << endl;
+                waitForEnter();
+                break;
+            }
+            int i = 0;
+            for (auto flow : flows)
+            {
+                cout << "[Flow=" << flow.cost << "] ";
+                auto path = convertVerticesToStations(stationsMap, flow.nodes);
+                for (int i = 0; i < path.size(); i++)
+                {
+                    cout << path[i];
+                    if (i != path.size() - 1) cout << " -> ";
+                }
+                cout << endl;
+            }
+            int flow = 0;
+            for (auto flowPair : flows)
+            {
+                flow = flow + flowPair.cost;
+            }
+            cout << "Sum Flow: " << flow << endl;
+
             waitForEnter();
             break;
         }
