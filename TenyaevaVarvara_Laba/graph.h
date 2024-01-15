@@ -1,3 +1,5 @@
+#pragma once
+
 #include <map>
 #include <set>
 #include <stack>
@@ -12,7 +14,9 @@
 
 #include "math.h"
 #include "utils.h"
-#include "objects.h"
+#include "pipe.h"
+#include "station.h"
+#include "obj_utils.h"
 
 using namespace std;
 
@@ -57,17 +61,17 @@ void printGraph(const unordered_map<int, Pipe>& pipes) {
     {
         if ((it->second.nodes.first != 0) && (it->second.nodes.second != 0) && (it->second.repair))
         {
-            cout << '[' << it->second.nodes.first << ']' << " ---"<< it->first 
-                 << "---> " << '[' << it->second.nodes.second << ']' << endl;
+            cout << '[' << it->second.nodes.first << ']' << " ---" << it->first
+                << "---> " << '[' << it->second.nodes.second << ']' << endl;
         }
     }
 }
 
 vector<vector<int>> buildAdjMatrix(unordered_map<int, Station>& stations, unordered_map<int, Pipe>& pipes, bool withWeight = false) {
     vector<vector<int>> adjMatrix = vector<vector<int>>(stations.size(), vector<int>(stations.size(), 0));
-    
+
     int uniqueId = 0;
-    for (auto &station : stations) {
+    for (auto& station : stations) {
         station.second.verticeId = uniqueId++;
     }
 
@@ -84,29 +88,29 @@ vector<vector<int>> buildAdjMatrix(unordered_map<int, Station>& stations, unorde
     return adjMatrix;
 }
 
-vector<int> topologicalSort(vector<vector<int>> adj, int V) { 
-    vector<int> in_degree(V, 0); 
+vector<int> topologicalSort(vector<vector<int>> adj, int V) {
+    vector<int> in_degree(V, 0);
     vector<int> result;
-  
-    for (int u = 0; u < V; u++) { 
-        for (int x:adj[u]) 
-            in_degree[x]++; 
-    } 
-  
-    queue<int> q; 
-    for (int i = 0; i < V; i++) 
-        if (in_degree[i] == 0) 
-            q.push(i); 
 
-    while (!q.empty()) { 
-        int u = q.front(); 
-        q.pop(); 
+    for (int u = 0; u < V; u++) {
+        for (int x : adj[u])
+            in_degree[x]++;
+    }
+
+    queue<int> q;
+    for (int i = 0; i < V; i++)
+        if (in_degree[i] == 0)
+            q.push(i);
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
         result.push_back(u);
-  
-        for (int x: adj[u]) 
-            if (--in_degree[x] == 0) 
-                q.push(x); 
-    } 
+
+        for (int x : adj[u])
+            if (--in_degree[x] == 0)
+                q.push(x);
+    }
     return result;
 }
 
@@ -136,7 +140,8 @@ vector<int> getShortestPath(vector<vector<int>> graph, int source, int target) {
                 distances[i] = distances[currentNode] + graph[currentNode][i];
                 prev[i] = currentNode;
                 q.push(i);
-            } else if (graph[currentNode][i] != INF && distances[currentNode] + graph[currentNode][i] < distances[i]) {
+            }
+            else if (graph[currentNode][i] != INF && distances[currentNode] + graph[currentNode][i] < distances[i]) {
                 distances[i] = distances[currentNode] + graph[currentNode][i];
                 prev[i] = currentNode;
             }
@@ -181,7 +186,7 @@ vector<Path> getMaxFlow(vector<vector<int>>& graph, int source, int sink) {
             int v = path[i + 1];
             residualGraph[u][v] -= minFlow;
         }
-        paths.push_back({path, minFlow});
+        paths.push_back({ path, minFlow });
     }
 
     return paths;

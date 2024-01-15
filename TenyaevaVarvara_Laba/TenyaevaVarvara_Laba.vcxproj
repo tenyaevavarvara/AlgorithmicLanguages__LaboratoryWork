@@ -128,12 +128,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="object.cpp" />
+    <ClCompile Include="pipe.cpp" />
+    <ClCompile Include="station.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graph.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="menu.h" />
-    <ClInclude Include="objects.h" />
+    <ClInclude Include="object.h" />
+    <ClInclude Include="obj_utils.h" />
+    <ClInclude Include="pipe.h" />
+    <ClInclude Include="station.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

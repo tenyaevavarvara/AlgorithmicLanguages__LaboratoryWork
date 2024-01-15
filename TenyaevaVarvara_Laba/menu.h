@@ -1,52 +1,18 @@
+#pragma once 
+
 #include <set>
 #include <iostream>
 #include <algorithm>
 #include <unordered_map>
 
 #include "graph.h"
-#include "objects.h"
 #include "utils.h"
 #include "logger.h"
+#include "pipe.h"
+#include "station.h"
+#include "obj_utils.h"
 
 using namespace std;
-
-// Stopping on 0
-int inputExistingId(vector<int>& ids)
-{
-    if (ids.empty()) return 0;
-    int maxId = *(max_element(ids.begin(), ids.end()));
-    while (true)
-    {
-        int id = GetCorrectNumber<int>(0, maxId);
-        if (id == 0) return id;
-        if (std::find(ids.begin(), ids.end(), id) != ids.end())
-        {
-            return id;
-        }
-        else cout << "ID doesn't exist, try again: ";
-    }
-}
-
-
-string inputFilename()
-{
-    string filename;
-    cout << "Input filename (enter for tenyaeva.txt): ";
-    std::cin.ignore(10000, '\n');
-    getline(cin, filename);
-    if (filename == "") filename = "tenyaeva.txt";
-    logValue(filename);
-    return filename;
-}
-
-void waitForEnter(bool ignore = true)
-{
-    string inputLine;
-    cout << "Press enter to continue..." << endl;
-    if (ignore) std::cin.ignore(10000, '\n');
-    getline(cin, inputLine);
-    return;
-}
 
 void printMenu()
 {
@@ -59,8 +25,8 @@ void printMenu()
         << "5.  Edit a pipe" << endl
         << "6.  Save pipes to file" << endl
         << "7.  Load pipes from file" << endl
-        << "8. Save stations to file" << endl
-        << "9. Load stations from file" << endl
+        << "8.  Save stations to file" << endl
+        << "9.  Load stations from file" << endl
         << "10. Find pipes" << endl
         << "11. Find stations" << endl
         << "12. Batch pipes editing" << endl
@@ -710,11 +676,11 @@ void mainLoop() {
                 // int id1 = GetCorrectNumber<int>(0, freeStations.size());
                 int id1 = inputExistingId(freeStations);
                 freeStations.erase(std::remove(freeStations.begin(), freeStations.end(), id1), freeStations.end());
-                if (id1 == 0) { running == false; break; waitForEnter(); }
+                if (id1 == 0) { running = false; break; waitForEnter(); }
                 cout << "Type second station id to connect (0 - exit): ";
                 // int id2 = GetCorrectNumber<int>(0, freeStations.size());
                 int id2 = inputExistingId(freeStations);
-                if (id2 == 0) { running == false; break; waitForEnter(); }
+                if (id2 == 0) { running = false; break; waitForEnter(); }
                 // ids are the same
                 if (id1 == id2)
                 {
@@ -759,7 +725,7 @@ void mainLoop() {
                 {
                     cout << "Choose pipe id (0 - exit): ";
                     pipeId = inputExistingId(freePipes);
-                    if (pipeId == 0) { running == false; break; }
+                    if (pipeId == 0) { running = false; break; }
                 }
                 /* Connect stations */
                 pipesMap[pipeId].nodes = make_pair(id1, id2);
@@ -809,7 +775,7 @@ void mainLoop() {
                 }
                 cout << "Type edge id to delete (0 - exit): ";
                 int id = inputExistingId(edgesIds);
-                if (id == 0) { running == false; break; waitForEnter(); }
+                if (id == 0) { running = false; break; waitForEnter(); }
                 /* Delete edge */
                 system("cls");
                 stationsMap[pipesMap[id].nodes.first].inOperation--;
@@ -883,18 +849,22 @@ void mainLoop() {
         /* Shortest way */
         case 16:
         {
-            auto adjMatrix = buildAdjMatrix(stationsMap, pipesMap, true);
-            auto usedStations = getUsedStations(pipesMap);
+            auto adjMatrix = buildAdjMatrix(stationsMap, pipesMap, false);
+            vector<int> allStations;
+            allStations.push_back(0);
+            for (auto station : stationsMap) {
+                allStations.push_back(station.first);
+            }
 
             cout << "List of edges:" << endl;
             printGraph(pipesMap);
             cout << endl;
 
             cout << "Type start station id (0 - exit): ";
-            int first = inputExistingId(usedStations);
+            int first = inputExistingId(allStations);
             if (first == 0) break;
             cout << "Type destination station id (0 - exit): ";
-            int second = inputExistingId(usedStations);
+            int second = inputExistingId(allStations);
             if (second == 0) break;
             if (first == second)
             {
@@ -936,17 +906,21 @@ void mainLoop() {
         case 17:
         {
             auto adjMatrix = buildAdjMatrix(stationsMap, pipesMap, true);
-            auto usedStations = getUsedStations(pipesMap);
+            vector<int> allStations;
+            allStations.push_back(0);
+            for (auto station : stationsMap) {
+                allStations.push_back(station.first);
+            }
 
             cout << "List of edges:" << endl;
             printGraph(pipesMap);
             cout << endl;
 
             cout << "Type source station id (0 - exit): ";
-            int first = inputExistingId(usedStations);
+            int first = inputExistingId(allStations);
             if (first == 0) break;
             cout << "Type target station id (0 - exit): ";
-            int second = inputExistingId(usedStations);
+            int second = inputExistingId(allStations);
             if (second == 0) break;
             if (first == second)
             {
