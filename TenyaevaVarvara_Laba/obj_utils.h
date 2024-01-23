@@ -11,7 +11,7 @@
 #include "station.h"
 #include "utils.h"
 
-void downloadStations(string filename, unordered_map<int, Station>& stations)
+/*void downloadStations(string filename, unordered_map<int, Station>& stations)
 {
     ifstream fin(filename);
     if (fin.is_open())
@@ -47,19 +47,35 @@ void downloadStations(string filename, unordered_map<int, Station>& stations)
         fin.close();
     }
 }
+*/
 
-void downloadPipes(string filename, unordered_map<int, Pipe>& pipes)
+void downloadStations(ifstream& fin, unordered_map<int, Station>& stations)
 {
-    ifstream fin(filename);
-    if (fin.is_open())
-    {
-        int size;
+      int size;
+        
         fin >> size;
-        if (fin.fail())
-        {
+        if (fin.fail()) {
             fin.close();
             return;
         }
+        for (int i = 0; i < size; i++)
+        {
+            int id, workshop, inOperation;
+            double effectiveness;
+            string title;
+            fin >> id;
+            getline(fin >> std::ws, title);
+            fin >> workshop >> inOperation >> effectiveness;
+            stations[id] = Station(title, workshop, inOperation, effectiveness, id);
+        }
+    
+}
+
+void downloadPipes(ifstream& fin, unordered_map<int, Pipe>& pipes)
+{
+    
+        int size;
+        fin >> size;
         for (int i = 0; i < size; i++)
         {
             int id, diameter, first, second;
@@ -71,20 +87,16 @@ void downloadPipes(string filename, unordered_map<int, Pipe>& pipes)
             fin >> length >> diameter >> repair >> first >> second;
             pipes[id] = Pipe(title, length, diameter, repair, id, first, second);
         }
-        fin.close();
-    }
+    
 }
 
-void saveStations(string filename, unordered_map<int, Station>& stations)
+void saveStations(ofstream& fout, unordered_map<int, Station>& stations)
 {
-    unordered_map<int, Pipe> pipes;
-    downloadPipes(filename, pipes);
-    ofstream fout(filename);
-    if (fout.is_open())
+    //unordered_map<int, Pipe> pipes;
+    //downloadPipes(fout, pipes);
+    //fout << pipes.size() << endl;
+    /*for (const auto& pair : pipes)
     {
-        fout << pipes.size() << endl;
-        for (const auto& pair : pipes)
-        {
             const Pipe& pipe = pair.second;
             fout << pipe.id << endl;
             fout << pipe.title << endl;
@@ -93,31 +105,27 @@ void saveStations(string filename, unordered_map<int, Station>& stations)
             fout << pipe.repair << endl;
             fout << pipe.nodes.first << endl;
             fout << pipe.nodes.second << endl;
-        }
-        fout << stations.size() << endl;
-        for (const auto& pair : stations)
-        {
+    }
+    */
+    fout << stations.size() << endl;
+    for (const auto& pair : stations)
+    {
             const Station& station = pair.second;
             fout << station.id << endl;
             fout << station.title << endl;
             fout << station.workshop << endl;
             fout << station.inOperation << endl;
             fout << station.effectiveness << endl;
-        }
-        fout.close();
     }
 }
 
-void savePipes(string filename, unordered_map<int, Pipe>& pipes)
+void savePipes(ofstream& fout, unordered_map<int, Pipe>& pipes)
 {
-    unordered_map<int, Station> stations;
-    downloadStations(filename, stations);
-    ofstream fout(filename);
-    if (fout.is_open())
+    //unordered_map<int, Station> stations;
+    //downloadStations(filename, stations);
+    fout << pipes.size() << endl;
+    for (const auto& pair : pipes)
     {
-        fout << pipes.size() << endl;
-        for (const auto& pair : pipes)
-        {
             const Pipe& pipe = pair.second;
             fout << pipe.id << endl;
             fout << pipe.title << endl;
@@ -126,19 +134,18 @@ void savePipes(string filename, unordered_map<int, Pipe>& pipes)
             fout << pipe.repair << endl;
             fout << pipe.nodes.first << endl;
             fout << pipe.nodes.second << endl;
-        }
-        fout << stations.size() << endl;
-        for (const auto& pair : stations)
-        {
+    }
+    /*fout << stations.size() << endl;
+    for (const auto& pair : stations)
+    {
             const Station& station = pair.second;
             fout << station.id << endl;
             fout << station.title << endl;
             fout << station.workshop << endl;
             fout << station.inOperation << endl;
             fout << station.effectiveness << endl;
-        }
-        fout.close();
     }
+    */
 }
 
 vector<int> findPipesByString(const unordered_map<int, Pipe>& pipes, const string& str)

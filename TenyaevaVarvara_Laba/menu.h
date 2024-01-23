@@ -2,6 +2,7 @@
 
 #include <set>
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <unordered_map>
 
@@ -34,7 +35,9 @@ void printMenu()
         << "14. Disconnect stations" << endl
         << "15. View topological sorted graph" << endl
         << "16. Shortest way" << endl
-        << "17. Max flow" << endl << endl;
+        << "17. Max flow" << endl << endl
+        << "18. Save to file" << endl
+        << "19. Load from file" << endl << endl;
 }
 
 void menuAddPipe(unordered_map<int, Pipe>& pipesMap)
@@ -165,7 +168,7 @@ void menuEditPipe(unordered_map<int, Pipe>& pipesMap)
     waitForEnter();
 }
 
-void menuSavePipesToFile(unordered_map<int, Pipe>& pipesMap)
+/*void menuSavePipesToFile(unordered_map<int, Pipe>& pipesMap)
 {
     system("cls");
     cout << "[Save pipes to file]" << endl;
@@ -174,14 +177,17 @@ void menuSavePipesToFile(unordered_map<int, Pipe>& pipesMap)
     cout << "Pipes successfully saved!" << endl;
     waitForEnter(false);
 }
+*/
 
 void menuLoadPipesFromFile(unordered_map<int, Pipe>& pipesMap)
 {
+    cout << "no more" << endl;
+    return;
     system("cls");
     unordered_map<int, Pipe> map;
     cout << "[Load pipes from file]" << endl;
     string filename = inputFilename();
-    downloadPipes(filename, map);
+    //downloadPipes(filename, map);
     cout << "Loaded Pipes:" << endl;
     for (auto it = map.begin(); it != map.end(); it++)
     {
@@ -191,7 +197,7 @@ void menuLoadPipesFromFile(unordered_map<int, Pipe>& pipesMap)
     waitForEnter(false);
 }
 
-void menuSaveStationsToFile(unordered_map<int, Station>& stationsMap)
+/*void menuSaveStationsToFile(unordered_map<int, Station>& stationsMap)
 {
     system("cls");
     cout << "[Save stations to file]" << endl;
@@ -200,19 +206,73 @@ void menuSaveStationsToFile(unordered_map<int, Station>& stationsMap)
     cout << "Stations successfully saved!" << endl;
     waitForEnter(false);
 }
+*/
+
+void menuSaveToFile(unordered_map<int, Pipe>& pipesMap, unordered_map<int, Station>& stationsMap)
+{
+    system("cls");
+    cout << "[Save pipes to file]" << endl;
+    string filename = inputFilename();
+    ofstream fout(filename);
+    if (fout.is_open())
+    {
+        savePipes(fout, pipesMap);
+        cout << "Pipes successfully saved!" << endl;
+        saveStations(fout, stationsMap);
+        cout << "Stations successfully saved!" << endl;
+        fout.close();
+    }
+
+    waitForEnter(false);
+}
 
 void menuLoadStationsFromFile(unordered_map<int, Station>& stationsMap)
 {
+    cout << "no more" << endl;
+    return;
     system("cls");
     unordered_map<int, Station> map;
     cout << "[Load stations from file]" << endl;
     string filename = inputFilename();
-    downloadStations(filename, map);
+    //downloadStations(filename, map);
     cout << "Loaded Stations:" << endl;
     for (auto it = map.begin(); it != map.end(); it++)
     {
         it->second.print();
         stationsMap[it->first] = it->second;
+    }
+    waitForEnter(false);
+}
+
+void menuLoadFromFile(unordered_map<int, Pipe>& pipesMap, unordered_map<int, Station>& stationsMap)
+{
+    system("cls");
+    cout << "[Load pipes from file]" << endl;
+    string filename = inputFilename();
+    ifstream fin(filename);
+    if (fin.is_open())
+    {
+        downloadPipes(fin, pipesMap);
+
+        downloadStations(fin, stationsMap);
+
+        fin.close();
+        cout << "Loaded Pipes:" << endl;
+      //  for (auto it = pipesMap.begin(); it != pipesMap.end(); it++)
+        for (auto& [id, p]: pipesMap)
+        {
+            p.print();
+            //pipesMap[id] = p;
+        }
+
+        cout << "Loaded Stations:" << endl;
+        for (auto& [id, s]: stationsMap)
+        {
+            s.print();
+           // stationsMap[it->first] = it->second;
+
+
+        }
     }
     waitForEnter(false);
 }
@@ -936,7 +996,7 @@ void mainLoop() {
         system("cls");
         printMenu();
         cout << "Select a menu item: ";
-        int i = GetCorrectNumber<int>(0, 17);
+        int i = GetCorrectNumber<int>(0, 19);
         switch (i)
         {
             /* Add pipe */
@@ -972,7 +1032,7 @@ void mainLoop() {
         /* Save pipes to file */
         case 6:
         {
-            menuSavePipesToFile(pipesMap);
+            //menuSavePipesToFile(pipesMap);
             break;
         }
         /* Load pipes from file */
@@ -984,7 +1044,7 @@ void mainLoop() {
         /* Save stations to file */
         case 8:
         {
-            menuSaveStationsToFile(stationsMap);
+            //menuSaveStationsToFile(stationsMap);
             break;
         }
         /* Load stations from file */
@@ -1039,6 +1099,18 @@ void mainLoop() {
         case 17:
         {
             menuMaxFlow(pipesMap, stationsMap);
+            break;
+        }
+        /* Save file */
+        case 18:
+        {
+            menuSaveToFile(pipesMap, stationsMap);
+            break;
+        }
+        /* Load file */
+        case 19:
+        {
+            menuLoadFromFile(pipesMap, stationsMap);
             break;
         }
         /* Exit */
